@@ -2,7 +2,7 @@ import React from 'react';
 import Hero from "./Hero"
 import Award from "./Award"
 import Stats from "./Stats"
-import Pricing from "./Pricing"
+import PricingHome from "./PricingHome"
 import Education from "./Education"
 
 import Navbar from "../Navbar"
@@ -17,7 +17,7 @@ function HomePage() {
         <Hero/>
         <Award/>
          <Stats/>
-          <Pricing/>
+          <PricingHome/>
           <Education/>
           <OpenAccount/>
       
