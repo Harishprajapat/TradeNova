@@ -6,7 +6,7 @@ function OpenAccount() {
           <h1 className='mt-5'>Open a Zerodha account</h1>
           <p className='text-muted mt-3 '>Modern platforms and apps, ₹0 investments, and flat ₹20 intraday and F&O trades.</p>
            <button 
-          className='btn btn-primary fs-5 mt-5' 
+          className='btn btn-primary mb-5 fs-5 mt-5' 
           style={{ width: "200px", margin: "0 auto", backgroundColor: "#387ed1", border: "none", padding: "10px" }}
         >
           Sign up for free
