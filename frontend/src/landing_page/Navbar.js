@@ -1,8 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 function Navbar() {
+  const navLinkStyle = { 
+    fontSize: "0.9rem", 
+    color: "#666", 
+    fontWeight: "400",
+    marginLeft: "2rem" 
+  };
   return (
-    <nav class="navbar navbar-expand-lg border-bottom" style={{backgroundColor: "#FFF"}}>
+   <nav className="navbar navbar-expand-lg border-bottom bg-white fixed-top p-3">
       <div class="container">
         <Link class="navbar-brand" to="/">
           <img src="media/image/logo.svg" style={{ width: "25%" }} alt="logo" />
@@ -21,22 +27,27 @@ function Navbar() {
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav  flex-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <Link class="nav-link active" aria-current="page" to="/signup">
+              <Link class="nav-link active" style={navLinkStyle} aria-current="page" to="/signup">
                 Signup
               </Link>
             </li>
             <li class="nav-item">
-              <Link class="nav-link active" to="/about">
+              <Link class="nav-link active" style={navLinkStyle} to="/about">
                 About
               </Link>
             </li>
             <li class="nav-item">
-              <Link class="nav-link active" to="/product">
+              <Link class="nav-link active" style={navLinkStyle} to="/product">
                 Product
               </Link>
             </li>
+             <li class="nav-item">
+              <Link class="nav-link active"style={navLinkStyle} to="/pricing">
+                Pricing
+              </Link>
+            </li>
             <li class="nav-item">
-              <Link class="nav-link active" to="/support">
+              <Link class="nav-link active" style={navLinkStyle} to="/support">
                 Support
               </Link>
             </li>
