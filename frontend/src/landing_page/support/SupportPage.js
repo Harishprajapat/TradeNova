@@ -1,7 +1,13 @@
 import React from 'react';
+import Hero from "./Hero"
+import CreateTicekt from "./CreateTicekt"
+
 function SupportPage() {
     return ( 
-        <h1>SupportPage</h1>
+       <div>
+        <Hero/>
+        <CreateTicekt/>
+       </div>
      );
 }
 
