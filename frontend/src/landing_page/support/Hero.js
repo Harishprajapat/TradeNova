@@ -23,7 +23,7 @@ function Hero() {
         <h4 className="fs-4 fw-medium">Support Portal</h4>
         <a href="">Track Ticekt</a>
       </div>
-      <div className="row">
+      <div className="row p-4">
         <div className="col-lg-6 col-md-12">
           <h2 className="fs-3 mb-5 fw-normal" style={{ lineHeight: "1.5" }}>
             Search for an answer or browse help topics to create a ticket
