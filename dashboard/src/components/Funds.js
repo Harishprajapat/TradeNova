@@ -72,8 +72,7 @@ const Funds = () => {
               <p>0.00</p>
             </div>
           </div>
-        </div>
-
+        </div>   
         <div className="col">
           <div className="commodity">
             <p>You don't have a commodity account</p>
