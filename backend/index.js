@@ -8,7 +8,7 @@ const cors = require("cors");
 const { HoldingsModel } = require("./model/HoldingsModel");
 const { PositionsModel } = require("./model/PositionsModel");
 
-
+const { OrdersModel }= require("./model/OrderModel");
 
 const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URL;
@@ -186,6 +186,7 @@ app.use(bodyParser.json());
 // });
 
 
+
 app.get("/allHoldings", async (req, res) => {
   let allHoldings = await HoldingsModel.find({});
   res.json(allHoldings);
@@ -196,8 +197,40 @@ app.get("/allPositions", async (req, res) => {
   res.json(allPositions);
 });
 
-app.listen(3002, () => {
-  console.log("App started");
-  mongoose.connect(uri);
-  console.log("DB connected");
+app.post("/newOrder", async (req, res) => {
+  try {
+    const newOrder = new OrdersModel({
+      name: req.body.name,
+      qty: req.body.qty,
+      price: req.body.price,
+      mode: req.body.mode,
+    });
+
+    await newOrder.save();
+
+    console.log("Saved to DB ✅");
+
+    res.send("Order saved!");
+  } catch (err) {
+    console.log("Error saving:", err);
+    res.status(500).send("Error saving order");
+  }
 });
+
+// app.listen(3002, () => {
+//   console.log("App started");
+//   mongoose.connect(uri);
+//   console.log("DB connected");
+// });
+mongoose
+  .connect(uri)
+  .then(() => {
+    console.log("DB connected ✅");
+
+    app.listen(3002, () => {
+      console.log("App started 🚀");
+    });
+  })
+  .catch((err) => {
+    console.log("DB connection error ❌", err);
+  });
