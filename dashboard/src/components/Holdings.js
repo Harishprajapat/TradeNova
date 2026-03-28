@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios, { all } from "axios";
+import axios from "axios";
 
 // import { holdings } from "../data/data";
 
@@ -12,6 +12,7 @@ const Holdings = () => {
       setAllHoldings(res.data);
     });
   }, []);
+
   return (
     <>
       <h3 className="title">Holdings ({allHoldings.length})</h3>
