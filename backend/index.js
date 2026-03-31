@@ -233,6 +233,16 @@ app.post("/sellOrder", async (req, res) => {
   }
 });
 
+//allOrder
+app.get("/allOrders", async (req, res) => {
+  try {
+    const orders = await OrdersModel.find().sort({ _id: -1 });
+    res.json(orders);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error fetching orders");
+  }
+});
 app.get("/holdings", async (req, res) => {
   try {
     const holdings = await HoldingsModel.find();
