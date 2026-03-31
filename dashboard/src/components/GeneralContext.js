@@ -16,7 +16,8 @@ export const GeneralContextProvider = (props) => {
 
   const [isSellWindowOpen, setIsSellWindowOpen] = useState(false);
   const [selectedSellStockUID, setSelectedSellStockUID] = useState("");
-
+  
+  
   const handleOpenBuyWindow = (uid) => {
     setIsBuyWindowOpen(true);
     setSelectedStockUID(uid);
@@ -43,6 +44,7 @@ const handleCloseSellWindow = () => {
         closeBuyWindow: handleCloseBuyWindow,
         openSellWindow: handleOpenSellWindow,    
         closeSellWindow: handleCloseSellWindow,
+         
       }}
     >
       {props.children}

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useContext } from "react";
+import GeneralContext from "./GeneralContext";
+
 
 // import { holdings } from "../data/data";
 
@@ -8,11 +11,10 @@ const Holdings = () => {
 
   useEffect(() => {
     axios.get("http://localhost:3002/allHoldings").then((res) => {
-      console.log(res.data);
+      // console.log(res.data);
       setAllHoldings(res.data);
     });
   }, []);
-
   return (
     <>
       <h3 className="title">Holdings ({allHoldings.length})</h3>
