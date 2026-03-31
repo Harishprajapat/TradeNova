@@ -20,6 +20,7 @@ const Holdings = () => {
       <h3 className="title">Holdings ({allHoldings.length})</h3>
 
       <div className="order-table">
+        
         <table>
           <tr>
             <th>Instrument</th>
@@ -50,6 +51,7 @@ const Holdings = () => {
                 </td>
                 <td className={profClass}>{stock.net}.</td>
                 <td className={profClass}>{stock.day}.</td>
+               
               </tr>
             );
           })}
