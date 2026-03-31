@@ -197,26 +197,51 @@ app.get("/allPositions", async (req, res) => {
   res.json(allPositions);
 });
 
+//Buy logic
 app.post("/newOrder", async (req, res) => {
+  let newOrder = new OrdersModel({
+    name: req.body.name,
+    qty: req.body.qty,
+    price: req.body.price,
+    mode: req.body.mode,
+  });
+
+  newOrder.save();
+
+  res.send("Order saved!");
+});
+
+//Sell logic...
+app.post("/sellOrder", async (req, res) => {
   try {
-    const newOrder = new OrdersModel({
-      name: req.body.name,
-      qty: req.body.qty,
-      price: req.body.price,
-      mode: req.body.mode,
+    const { name, qty, price, mode } = req.body;
+
+    const sellOrder = new OrdersModel({
+      name,
+      qty,
+      price,
+      mode,
     });
 
-    await newOrder.save();
+    await sellOrder.save(); 
 
-    console.log("Saved to DB ✅");
+    res.send("Sell Order Saved ✅");
 
-    res.send("Order saved!");
   } catch (err) {
-    console.log("Error saving:", err);
-    res.status(500).send("Error saving order");
+    console.log(err);
+    res.status(500).send("Error saving sell order");
   }
 });
 
+app.get("/holdings", async (req, res) => {
+  try {
+    const holdings = await HoldingsModel.find();
+    res.json(holdings);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error fetching holdings");
+  }
+});
 // app.listen(3002, () => {
 //   console.log("App started");
 //   mongoose.connect(uri);

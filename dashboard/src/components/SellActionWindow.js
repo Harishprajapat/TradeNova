@@ -1,85 +1,105 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+
 import axios from "axios";
+import { useContext } from "react";
+
 import GeneralContext from "./GeneralContext";
+
 import "./SellActionWindow.css";
 
-
-
 const SellActionWindow = ({ uid }) => {
+  const [stockQuantity, setStockQuantity] = useState(1);
+  const [stockPrice, setStockPrice] = useState(0.0);
   const context = useContext(GeneralContext);
 
-  const [stockQuantity, setStockQuantity] = useState(1);
-  const [stockPrice, setStockPrice] = useState(0);
+//   const handleSellClick = async () => {
+//   try {
+//     const res = await axios.post("http://localhost:3002/sellOrder", {
+//       name: typeof uid === "object" ? uid.name : uid,
+//       qty: stockQuantity,
+//       price: stockPrice,
+//       mode: "SELL",
+//     });
 
+//     console.log(res.data); 
 
-  const handleSellClick = async () => {
+//   } catch (err) {
+//     console.log(err);
+//   }
+//  context.closeSellWindow();
+// };
+ 
+const handleSellClick = async () => {
+  const stockName = typeof uid === "object" ? uid.name : uid;
+
+  console.log("📦 Sending:", {
+    name: stockName,
+    qty: stockQuantity,
+    price: stockPrice,
+  });
+
   try {
-    const res = await axios.post("http://localhost:3002/newOrder", {
-      name: typeof uid === "object" ? uid.name : uid,
+    const res = await axios.post("http://localhost:3002/sellOrder", {
+      name: stockName, 
       qty: stockQuantity,
       price: stockPrice,
       mode: "SELL",
     });
 
     console.log(res.data);
+
     context.closeSellWindow();
+
   } catch (err) {
     console.log(err);
   }
 };
-
   const handleCancelClick = () => {
-      context.closeSellWindow();
+  context.closeSellWindow();
   };
 
-return (
-  <div id="sell-window">
-    <div className="modal">
-
-      {/* Header */}
-      <div className="modal-header">
-        <h2>{typeof uid === "object" ? uid.name : uid}</h2>
-        <span className="sell-tag">SELL</span>
-      </div>
-
-      {/* Body */}
-      <div className="modal-body">
-        <div className="input-group">
-          <label>Quantity</label>
-          <input
-  type="number"
-  value={stockQuantity}
-  onChange={(e) => setStockQuantity(Number(e.target.value))}
-/>
-        </div>
-
-        <div className="input-group">
-          <label>Price</label>
-          <input
-  type="number"
-  value={stockPrice}
-  onChange={(e) => setStockPrice(Number(e.target.value))}
-/>
+  return (
+    <div className="container" id="buy-window" draggable="true">
+      <div className="regular-order">
+        <div className="inputs">
+          <fieldset>
+            <legend>Qty.</legend>
+            <input
+              type="number"
+              name="qty"
+              id="qty"
+              onChange={(e) => setStockQuantity(e.target.value)}
+              value={stockQuantity}
+            />
+          </fieldset>
+          <fieldset>
+            <legend>Price</legend>
+            <input
+              type="number"
+              name="price"
+              id="price"
+              step="0.05"
+              onChange={(e) => setStockPrice(e.target.value)}
+              value={stockPrice}
+            />
+          </fieldset>
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="modal-footer">
-        <span>Margin ₹140.65</span>
-
-        <div className="actions">
-          <button className="btn sell-btn" onClick={handleSellClick}>
+      <div className="buttons">
+        <span>Margin required ₹140.65</span>
+        <div>
+          <Link className="btn btn-blue" onClick={handleSellClick}>
             Sell
-          </button>
-          <button className="btn cancel-btn" onClick={handleCancelClick}>
+          </Link>
+          <Link to="" className="btn btn-grey" onClick={handleCancelClick}>
             Cancel
-          </button>
+          </Link>
         </div>
       </div>
-
     </div>
-  </div>
-);
+  );
 };
 
 export default SellActionWindow;
