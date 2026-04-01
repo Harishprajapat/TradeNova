@@ -5,10 +5,13 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
+
 const { HoldingsModel } = require("./model/HoldingsModel");
 const { PositionsModel } = require("./model/PositionsModel");
 
 const { OrdersModel }= require("./model/OrderModel");
+
+const authRoutes = require("./routes/auth");
 
 const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URL;
@@ -186,6 +189,8 @@ app.use(bodyParser.json());
 // });
 
 
+app.use(express.json());
+app.use("/auth", authRoutes);
 
 app.get("/allHoldings", async (req, res) => {
   let allHoldings = await HoldingsModel.find({});
