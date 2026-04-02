@@ -16,9 +16,11 @@ import { GeneralContextProvider } from "./GeneralContext";
 const Dashboard = () => {
   return (
     <div className="dashboard-container">
+      
       <GeneralContextProvider>
         <WatchList />
       </GeneralContextProvider>
+      
       <div className="content">
         <Routes>
           <Route exact path="/" element={<Summary />} />
@@ -29,10 +31,13 @@ const Dashboard = () => {
           <Route path="/apps" element={<Apps />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-
+          console.log("Dashboard loaded");
         </Routes>
+      
       </div>
+      
     </div>
+   
   );
 };
 
