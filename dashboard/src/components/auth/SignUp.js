@@ -1,9 +1,10 @@
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { toast } from "react-toastify";
 export default function Signup() {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const [data, setData] = useState({
     name: "",
     email: "",
@@ -15,8 +16,13 @@ export default function Signup() {
 
     await axios.post("http://localhost:3002/auth/signup", data);
 
-    alert("Signup successful");
-    navigate("/login");
+    
+    toast.success("Signup successful 🚀");
+
+    setTimeout(() => {
+      navigate("/login");
+    }, 1500);
+
   };
   const inputStyle = {
     width: "100%",
@@ -50,7 +56,7 @@ export default function Signup() {
       }}
     >
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit} 
         style={{
           background: "#1e293b",
           padding: "30px",
@@ -72,12 +78,31 @@ export default function Signup() {
           style={inputStyle}
         />
 
-        <input
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setData({ ...data, password: e.target.value })}
-          style={inputStyle}
-        />
+       <div style={{ position: "relative" }}>
+  <input
+    type={showPassword ? "text" : "password"}
+    placeholder="Enter password"
+    value={data.password}
+    onChange={(e) => setData({ ...data, password: e.target.value })}
+    style={inputStyle}
+  />
+
+  {/* 👁 Toggle Button */}
+  <span
+    onClick={() => setShowPassword(!showPassword)}
+    style={{
+      position: "absolute",
+      right: "10px",
+      top: "50%",
+      transform: "translateY(-50%)",
+      cursor: "pointer",
+      color: "#94a3b8",
+      fontSize: "14px"
+    }}
+  >
+    {showPassword ? "Hide" : "Show"}
+  </span>
+</div>
 
         <button style={btnStyle}>Signup</button>
         <p style={{ marginTop: "10px", color: "#94a3b8" }}>

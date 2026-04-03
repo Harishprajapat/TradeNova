@@ -721,10 +721,12 @@ hr {
   height: 100%;
   align-items: center;
   justify-content: flex-end;
-  display: none;
+   display: flex;                          /* ← was display:none */
+  background: rgba(30, 30, 50, 0.85);    /* ← covers row behind buttons */
+  padding-right: 10px;
+  box-sizing: border-box;
 }
-
-.actions span button {
+.actions  button {
   width: 40px;
   height: 30px;
   border-radius: 4px;
@@ -843,3 +845,53 @@ hr {
 }
 
 
+/* Fix for dark dashboard */
+.dashboard-watchlist .list li {
+  background: transparent;
+}
+
+.dashboard-watchlist .list li:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dashboard-watchlist .actions {
+  color: white !important;
+
+}
+
+.dashboard-watchlist .list {
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-watchlist .watchlist-container {
+  width: 100%;
+  flex-basis: 100%;
+  box-shadow: none;
+  background: transparent;
+}
+
+.dashboard-watchlist .search {
+  background: transparent;
+  color: #94a3b8;
+}
+
+.dashboard-watchlist .counts {
+  color: #94a3b8;
+}
+
+.dashboard-watchlist .item p {
+  color: #94a3b8;
+}
+
+.dashboard-watchlist .percent {
+  color: #94a3b8;
+}
+
+.dashboard-watchlist .price {
+  color: #e2e8f0;
+}
+
+.dashboard-watchlist .list li {
+  border-bottom: 0.8px solid rgba(255, 255, 255, 0.08);
+}
