@@ -20,6 +20,7 @@ export default function Navbar() {
           <Link style={linkStyle} to="/orders">Orders</Link>
           <Link style={linkStyle} to="/holdings">Holdings</Link>
           <Link style={linkStyle} to="/positions">Positions</Link>
+          <Link style={linkStyle} to="/watchlist">WatchList</Link>
            <Link style={linkStyle} to="/signup">SignUp</Link>
 
           <button style={btnStyle} onClick={() => {

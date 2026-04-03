@@ -6,21 +6,27 @@ import Layout from "./components/Layout";
 import Orders from "./components/Orders";
 import Holdings from "./components/Holdings";
 import Positions from "./components/Positions";
+import WatchList from "./components/WatchList";
+import TopBar from "./components/TopBar";
+import Summary from "./components/Summary";
 import { isAuthenticated } from "./utils/auth";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {GeneralContextProvider} from "./components/GeneralContext";
 function App() {
   return (
     <BrowserRouter>
+    <GeneralContextProvider>
+     
       <Routes>
-
-        {/* Layout wrapper */}
+       
         <Route element={<Layout />}>
-<Route
-      path="/"
-      element={
-        isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />
-      }
-    />
+          <Route
+            path="/"
+            element={
+              isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />
+            }
+          />
           <Route
             path="/dashboard"
             element={
@@ -30,9 +36,7 @@ function App() {
 
           <Route
             path="/orders"
-            element={
-              isAuthenticated() ? <Orders /> : <Navigate to="/login" />
-            }
+            element={isAuthenticated() ? <Orders /> : <Navigate to="/login" />}
           />
 
           <Route
@@ -49,25 +53,24 @@ function App() {
             }
           />
 
-        </Route>
+           <Route
+            path="/watchlist"
+            element={
+              isAuthenticated() ? <WatchList /> : <Navigate to="/login" />
+            }
+          />
+           
 
-        {/* <Route
-          path="/login"
-          element={
-            !isAuthenticated() ? <Login /> : <Navigate to="/" />
-          }
-        />
 
-        <Route
-          path="/signup"
-          element={
-            !isAuthenticated() ? <Signup /> : <Navigate to="/" />
-          }
-        /> */}
-          <Route path="/login" element={<Login />} />
-  <Route path="/signup" element={<Signup />} />
+          </Route>
+        
+      
 
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
+      <ToastContainer position="top-right" autoClose={2000} />
+      </GeneralContextProvider>
     </BrowserRouter>
   );
 }
