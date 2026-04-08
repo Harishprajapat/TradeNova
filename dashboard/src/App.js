@@ -7,8 +7,6 @@ import Orders from "./components/Orders";
 import Holdings from "./components/Holdings";
 import Positions from "./components/Positions";
 import WatchList from "./components/WatchList";
-import TopBar from "./components/TopBar";
-import Summary from "./components/Summary";
 import { isAuthenticated } from "./utils/auth";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
