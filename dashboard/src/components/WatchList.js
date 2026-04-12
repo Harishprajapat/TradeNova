@@ -1,4 +1,5 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import axios from "axios";
 import { watchlist } from "../data/data";
 import Tooltip from "@mui/material/Tooltip";
 import Grow from "@mui/material/Grow";
@@ -6,6 +7,7 @@ import BarChartOutlined from "@mui/icons-material/BarChartOutlined";
 import MoreHoriz from "@mui/icons-material/MoreHoriz";
 import GeneralContext from "./GeneralContext";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+
 import { DoughoutChart } from "./DoughnoutChart";
 import "./WatchList.css"
 

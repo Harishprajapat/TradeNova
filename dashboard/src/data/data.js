@@ -5,18 +5,18 @@ export const watchlist = [
     percent: "-1.60%",
     isDown: true,
   },
-  {
-    name: "ONGC",
+   {
+     name: "ONGC",
     price: 116.8,
     percent: "-0.09%",
     isDown: true,
-  },
-  {
-    name: "TCS",
+   },
+ {
+     name: "TCS",
     price: 3194.8,
     percent: "-0.25%",
     isDown: true,
-  },
+   },
   {
     name: "KPITTECH",
     price: 266.45,

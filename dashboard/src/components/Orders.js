@@ -1,18 +1,9 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "./Order.css"
+import React, { useContext } from "react";
+import GeneralContext from "./GeneralContext";
+import "./Order.css";
 
 const Orders = () => {
-  const [orders, setOrders] = useState([]);
-
-  const fetchOrders = async () => {
-    const res = await axios.get("http://localhost:3002/allOrders");
-    setOrders(res.data);
-  };
-
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+  const { orders } = useContext(GeneralContext);
 
   return (
     <div className="orders-container">
@@ -29,16 +20,22 @@ const Orders = () => {
         </thead>
 
         <tbody>
-          {orders.map((order, index) => (
-            <tr key={index}>
-              <td>{order.name}</td>
-              <td>{order.qty}</td>
-              <td>₹{order.price}</td>
-              <td className={order.mode === "BUY" ? "buy" : "sell"}>
-                {order.mode}
-              </td>
+          {orders.length === 0 ? (
+            <tr>
+              <td colSpan="4">No orders yet</td>
             </tr>
-          ))}
+          ) : (
+            orders.map((order, index) => (
+              <tr key={index}>
+                <td>{order.name}</td>
+                <td>{order.qty}</td>
+                <td>₹{order.price}</td>
+                <td className={order.type === "BUY" ? "buy" : "sell"}>
+                  {order.type}
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
