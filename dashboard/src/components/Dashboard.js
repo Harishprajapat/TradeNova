@@ -43,9 +43,12 @@
 
 // export default Dashboard;
 
+import React, { useContext } from "react";
+import GeneralContext from "./GeneralContext";
 import { Link } from "react-router-dom";
 import WatchList from "./WatchList";
 export default function Dashboard() {
+  const { balance } = useContext(GeneralContext);
   const container = {
     display: "flex",
     background: "linear-gradient(135deg, #0f172a, #020617)",
@@ -125,7 +128,7 @@ export default function Dashboard() {
   <div style={cardContainer}>
     <div style={card}>
       <h3>Portfolio Value</h3>
-      <p>₹1,25,000</p>
+     <h2>Balance: ₹{balance}</h2>
     </div>
     <div style={card}>
       <h3>Total Profit</h3>

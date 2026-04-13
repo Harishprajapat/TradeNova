@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-import axios from "axios";
 import { useContext } from "react";
 
 import GeneralContext from "./GeneralContext";
@@ -13,50 +12,16 @@ const SellActionWindow = ({ uid }) => {
   const [stockPrice, setStockPrice] = useState(0.0);
   const context = useContext(GeneralContext);
 
-//   const handleSellClick = async () => {
-//   try {
-//     const res = await axios.post("http://localhost:3002/sellOrder", {
-//       name: typeof uid === "object" ? uid.name : uid,
-//       qty: stockQuantity,
-//       price: stockPrice,
-//       mode: "SELL",
-//     });
-
-//     console.log(res.data); 
-
-//   } catch (err) {
-//     console.log(err);
-//   }
-//  context.closeSellWindow();
-// };
  
-const handleSellClick = async () => {
-  const stockName = typeof uid === "object" ? uid.name : uid;
+  const handleSellClick = () => {
+    const stockName = typeof uid === "object" ? uid.name : uid;
 
-  console.log("📦 Sending:", {
-    name: stockName,
-    qty: stockQuantity,
-    price: stockPrice,
-  });
-
-  try {
-    const res = await axios.post("http://localhost:3002/sellOrder", {
-      name: stockName, 
-      qty: stockQuantity,
-      price: stockPrice,
-      mode: "SELL",
-    });
-
-    console.log(res.data);
-
+    context.sellStock(stockName, stockQuantity, stockPrice);
     context.closeSellWindow();
+  };
 
-  } catch (err) {
-    console.log(err);
-  }
-};
   const handleCancelClick = () => {
-  context.closeSellWindow();
+    context.closeSellWindow();
   };
 
   return (
