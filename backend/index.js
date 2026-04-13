@@ -13,6 +13,7 @@ const { OrdersModel }= require("./model/OrderModel");
 
 const authRoutes = require("./routes/auth");
 const stockRoute = require("./routes/stockRoute")
+const portfolioRoutes = require("./routes/portfolio");
 const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URL;
 
@@ -191,7 +192,7 @@ app.use(bodyParser.json());
 
 app.use(express.json());
 app.use("/auth", authRoutes);
-
+app.use("/portfolio", portfolioRoutes);
 
 
 app.get("/allHoldings", async (req, res) => {

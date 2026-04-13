@@ -12,31 +12,7 @@ const SellActionWindow = ({ uid }) => {
   const [stockPrice, setStockPrice] = useState(0.0);
   const context = useContext(GeneralContext);
 
-  // const handleSellClick = async () => {
-  //   const stockName = typeof uid === "object" ? uid.name : uid;
-
-  //   console.log("📦 Sending:", {
-  //     name: stockName,
-  //     qty: stockQuantity,
-  //     price: stockPrice,
-  //   });
-
-  // try {
-  //   const res = await axios.post("http://localhost:3002/sellOrder", {
-  //     name: stockName,
-  //     qty: stockQuantity,
-  //     price: stockPrice,
-  //     mode: "SELL",
-  //   });
-
-  //   console.log(res.data);
-
-  //   context.closeSellWindow();
-
-  // }
-  // catch (err) {
-  //   console.log(err);
-  // }
+ 
   const handleSellClick = () => {
     const stockName = typeof uid === "object" ? uid.name : uid;
 
