@@ -1,54 +1,10 @@
-// import React from "react";
-// import { Route, Routes } from "react-router-dom";
-
-// import Apps from "./Apps";
-// import Funds from "./Funds";
-// import Holdings from "./Holdings";
-
-// import Orders from "./Orders";
-// import Positions from "./Positions";
-// import Summary from "./Summary";
-// import WatchList from "./WatchList";
-// import Signup from "./auth/SignUp";
-// import Login from "./auth/Login";
-// import { GeneralContextProvider } from "./GeneralContext";
-
-// const Dashboard = () => {
-//   return (
-//     <div className="dashboard-container">
-
-//       <GeneralContextProvider>
-//         <WatchList />
-//       </GeneralContextProvider>
-
-//       <div className="content">
-//          <Routes>
-//           <Route exact path="/" element={<Summary />} />
-//           <Route path="/orders" element={<Orders />} />
-//           <Route path="/holdings" element={<Holdings />} />
-//           <Route path="/positions" element={<Positions />} />
-//           <Route path="/funds" element={<Funds />} />
-//           <Route path="/apps" element={<Apps />} />
-//           <Route path="/signup" element={<Signup />} />
-//           <Route path="/login" element={<Login />} />
-
-//         </Routes>
-
-//       </div>
-
-//     </div>
-
-//   );
-// };
-
-// export default Dashboard;
-
 import React, { useContext } from "react";
 import GeneralContext from "./GeneralContext";
 import { Link } from "react-router-dom";
 import WatchList from "./WatchList";
 export default function Dashboard() {
   const { balance } = useContext(GeneralContext);
+  console.log("Dashboard balance:", balance);
   const container = {
     display: "flex",
     background: "linear-gradient(135deg, #0f172a, #020617)",
