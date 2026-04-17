@@ -10,64 +10,59 @@ import WatchList from "./components/WatchList";
 import { isAuthenticated } from "./utils/auth";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {GeneralContextProvider} from "./components/GeneralContext";
+import { GeneralContextProvider } from "./components/GeneralContext";
 function App() {
   return (
     <BrowserRouter>
-    <GeneralContextProvider>
-     
-      <Routes>
-       
-        <Route element={<Layout />}>
-          <Route
-            path="/"
-            element={
-              isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />
-            }
-          />
+      <GeneralContextProvider>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route
+              path="/"
+              element={
+                isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />
+              }
+            />
 
-          <Route
-            path="/orders"
-            element={isAuthenticated() ? <Orders /> : <Navigate to="/login" />}
-          />
+            <Route
+              path="/orders"
+              element={
+                isAuthenticated() ? <Orders /> : <Navigate to="/login" />
+              }
+            />
 
-          <Route
-            path="/holdings"
-            element={
-              isAuthenticated() ? <Holdings /> : <Navigate to="/login" />
-            }
-          />
+            <Route
+              path="/holdings"
+              element={
+                isAuthenticated() ? <Holdings /> : <Navigate to="/login" />
+              }
+            />
 
-          <Route
-            path="/positions"
-            element={
-              isAuthenticated() ? <Positions /> : <Navigate to="/login" />
-            }
-          />
+            <Route
+              path="/positions"
+              element={
+                isAuthenticated() ? <Positions /> : <Navigate to="/login" />
+              }
+            />
 
-           <Route
-            path="/watchlist"
-            element={
-              isAuthenticated() ? <WatchList /> : <Navigate to="/login" />
-            }
-          />
-           
-
-
+            <Route
+              path="/watchlist"
+              element={
+                isAuthenticated() ? <WatchList /> : <Navigate to="/login" />
+              }
+            />
           </Route>
-        
-      
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-      </Routes>
-      <ToastContainer position="top-right" autoClose={2000} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Routes>
+        <ToastContainer position="top-right" autoClose={2000} />
       </GeneralContextProvider>
     </BrowserRouter>
   );

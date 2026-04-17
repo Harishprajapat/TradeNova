@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-
+import axios from "axios";
 import GeneralContext from "./GeneralContext";
 
 import "./BuyActionWindow.css";
@@ -20,10 +20,22 @@ const BuyActionWindow = ({ uid }) => {
 
   // context.closeBuyWindow();
 
-  const handleBuyClick = () => {
-    context.buyStock(uid, stockQuantity, stockPrice);
+  const handleBuyClick = async () => {
+  try {
+    await axios.post("http://localhost:3002/portfolio/buy", {
+      userId: "testuser",
+      name: uid,
+      qty: Number(stockQuantity),
+      price: Number(stockPrice),
+    });
+
     context.closeBuyWindow();
-  };
+
+  } catch (err) {
+    console.error(err);
+    alert("Buy failed");
+  }
+};
 
   const handleCancelClick = () => {
     context.closeBuyWindow();
