@@ -1,38 +1,15 @@
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-// import "./Order.css";
+import React, { useContext } from "react";
+import GeneralContext from "./GeneralContext";
+import "./Order.css";
 
-// const Orders = () => {
-//   const [orders, setOrders] = useState([]);
-
-//   const userId = "testuser"; // 🔥 later replace with logged-in user
-
-//   useEffect(() => {
-//     const fetchOrders = async () => {
-//       try {
-//         const res = await axios.get(
-//           `http://localhost:3002/portfolio/${userId}`,
-//         );
-
-//         setOrders(res.data.orders || []);
-//         console.log(res.data);
-//         console.log(res.data.orders);
-//       } catch (err) {
-//         console.error("Error fetching orders:", err);
-//       }
-//     };
-// //first call
-//     fetchOrders();
-//     //auto refresh every 3sec
-//     const interval = setInterval(fetchOrders, 3000);
-//     //cleanup
-//     return () => clearInterval(interval);
-//   }, []);
+const Orders = () => {
+  const { orders } = useContext(GeneralContext);
 
 //   return (
 //     <div className="orders-container">
 //       <h2>Order History</h2>
 
+//  <div className="table-wrapper">
 //       <table>
 //         <thead>
 //           <tr>
@@ -50,13 +27,15 @@
 //               <td colSpan="5">No orders yet</td>
 //             </tr>
 //           ) : (
-//             orders.map((order, index) => (
+//             [...orders].reverse().map((order, index) => (
 //               <tr key={index}>
 //                 <td>{order.name}</td>
 //                 <td>{order.qty}</td>
 //                 <td>₹{order.price}</td>
-//                 <td className={order.type === "BUY" ? "buy" : "sell"}>
-//                   {order.type}
+//                 <td>
+//                   <span className={order.type === "BUY" ? "buy" : "sell"}>
+//                     {order.type}
+//                   </span>
 //                 </td>
 //                 <td>{new Date(order.time).toLocaleString()}</td>
 //               </tr>
@@ -64,57 +43,53 @@
 //           )}
 //         </tbody>
 //       </table>
+//         </div>
 //     </div>
 //   );
-// };
 
-// export default Orders;
+return(
+  <div className="orders-container">
+  <h2>Order History</h2>
 
+  {orders.length === 0 ? (
+    <p className="empty">No orders yet</p>
+  ) : (
+    <div className="orders-grid">
+      {orders
+        .slice()
+        .reverse() // 🔥 latest order on top
+        .map((order, index) => (
+          <div key={index} className="order-card">
+            
+            <div className="card-header">
+              <h3>{order.name}</h3>
+              <span className={order.type === "BUY" ? "buy" : "sell"}>
+                {order.type}
+              </span>
+            </div>
 
-import React, { useContext } from "react";
-import GeneralContext from "./GeneralContext";
-import "./Order.css";
+            <div className="card-body">
+              <div>
+                <p>Qty</p>
+                <h4>{order.qty}</h4>
+              </div>
 
-const Orders = () => {
-  const { orders } = useContext(GeneralContext);
+              <div>
+                <p>Price</p>
+                <h4>₹{order.price}</h4>
+              </div>
+            </div>
 
-  return (
-    <div className="orders-container">
-      <h2>Order History</h2>
+            <div className="card-footer">
+              {new Date(order.time).toLocaleString()}
+            </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Stock</th>
-            <th>Qty</th>
-            <th>Price</th>
-            <th>Type</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {orders.length === 0 ? (
-            <tr>
-              <td colSpan="5">No orders yet</td>
-            </tr>
-          ) : (
-            orders.map((order, index) => (
-              <tr key={index}>
-                <td>{order.name}</td>
-                <td>{order.qty}</td>
-                <td>₹{order.price}</td>
-                <td className={order.type === "BUY" ? "buy" : "sell"}>
-                  {order.type}
-                </td>
-                <td>{new Date(order.time).toLocaleString()}</td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+          </div>
+        ))}
     </div>
-  );
+  )}
+</div>
+);
 };
 
 export default Orders;
