@@ -895,3 +895,21 @@ hr {
 .dashboard-watchlist .list li {
   border-bottom: 0.8px solid rgba(255, 255, 255, 0.08);
 }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Mobile navbar css */
+
+@media (max-width: 768px) {
+  .desktop-menu {
+    display: none !important;
+  }
+
+  .mobile-menu-icon {
+    display: block !important;
+  }
+}
