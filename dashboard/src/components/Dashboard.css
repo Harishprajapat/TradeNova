@@ -1,0 +1,121 @@
+/* FULL PAGE FIX */
+body, html {
+  margin: 0;
+  padding: 0;
+  background: #020617;
+  overflow-x: hidden;
+}
+
+/* MAIN WRAPPER */
+.dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  color: white;
+}
+
+/* MAIN CONTENT */
+.dashboard-main {
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* TITLE */
+.dashboard-title {
+  font-size: 28px;
+  margin-bottom: 25px;
+}
+
+/* CARDS */
+.dashboard-cards {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.card {
+  flex: 1;
+  padding: 20px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card p {
+  color: #94a3b8;
+  margin-bottom: 10px;
+}
+
+.card h2 {
+  font-size: 24px;
+}
+
+.profit h2 {
+  color: #22c55e;
+}
+
+.loss h2 {
+  color: #ef4444;
+}
+
+/* SECTIONS */
+.dashboard-section {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+}
+
+/* WATCHLIST SCROLL FIX */
+.watchlist-box {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+/* EMPTY TEXT */
+.empty-text {
+  color: #64748b;
+}
+
+/* SCROLLBAR CLEAN */
+.watchlist-box::-webkit-scrollbar {
+  width: 6px;
+}
+.watchlist-box::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 10px;
+}
+
+/* ------------------ MOBILE ------------------ */
+
+@media (max-width: 768px) {
+
+  .dashboard-main {
+    padding: 15px;
+  }
+
+  .dashboard-title {
+    font-size: 22px;
+  }
+
+  /* STACK CARDS */
+  .dashboard-cards {
+    flex-direction: column;
+  }
+
+  .card {
+    width: 100%;
+  }
+
+  /* SECTION PADDING */
+  .dashboard-section {
+    padding: 15px;
+  }
+}
