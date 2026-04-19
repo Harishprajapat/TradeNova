@@ -8,17 +8,9 @@ import "./BuyActionWindow.css";
 const BuyActionWindow = ({ uid }) => {
   const context = useContext(GeneralContext);
   const [stockQuantity, setStockQuantity] = useState(1);
-  // const [stockPrice, setStockPrice] = useState(0.0);
-  const [stockPrice, setStockPrice] = useState(100); // default dummy price
-  // const handleBuyClick = () => {
-  //   axios.post("http://localhost:3002/newOrder", {
-  //     name: uid,
-  //     qty: stockQuantity,
-  //     price: stockPrice,
-  //     mode: "BUY",
-  //   });
 
-  // context.closeBuyWindow();
+  const [stockPrice, setStockPrice] = useState(100); // default dummy price
+
 
   const handleBuyClick = async () => {
   try {
