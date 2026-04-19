@@ -4,49 +4,6 @@ import "./Order.css";
 
 const Orders = () => {
   const { orders } = useContext(GeneralContext);
-
-//   return (
-//     <div className="orders-container">
-//       <h2>Order History</h2>
-
-//  <div className="table-wrapper">
-//       <table>
-//         <thead>
-//           <tr>
-//             <th>Stock</th>
-//             <th>Qty</th>
-//             <th>Price</th>
-//             <th>Type</th>
-//             <th>Time</th>
-//           </tr>
-//         </thead>
-
-//         <tbody>
-//           {orders.length === 0 ? (
-//             <tr>
-//               <td colSpan="5">No orders yet</td>
-//             </tr>
-//           ) : (
-//             [...orders].reverse().map((order, index) => (
-//               <tr key={index}>
-//                 <td>{order.name}</td>
-//                 <td>{order.qty}</td>
-//                 <td>₹{order.price}</td>
-//                 <td>
-//                   <span className={order.type === "BUY" ? "buy" : "sell"}>
-//                     {order.type}
-//                   </span>
-//                 </td>
-//                 <td>{new Date(order.time).toLocaleString()}</td>
-//               </tr>
-//             ))
-//           )}
-//         </tbody>
-//       </table>
-//         </div>
-//     </div>
-//   );
-
 return(
   <div className="orders-container">
   <h2>Order History</h2>

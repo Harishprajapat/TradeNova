@@ -28,7 +28,7 @@ export default function Login() {
 
     setTimeout(() => {
       navigate("/dashboard");
-    }, 1500);
+    });
 
   } catch (err) {
     toast.error("Invalid credentials ❌");

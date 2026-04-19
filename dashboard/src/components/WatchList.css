@@ -50,7 +50,7 @@
 .watchlist-list {
   height: 500px;
   overflow-y: auto;
-
+margin-top: 10px;
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(10px);
   border-radius: 16px;
@@ -151,7 +151,7 @@
 
 .watchlist-chart {
   height: 500px;
-
+margin-top: 10px;
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(10px);
   border-radius: 16px;
