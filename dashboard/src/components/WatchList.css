@@ -1,187 +1,325 @@
-/* ============================= */
-/* MAIN CONTAINER */
-/* ============================= */
+/* ======================================= */
+/* WRAPPER — side-by-side on desktop       */
+/* ======================================= */
 
-.watchlist-container {
-  padding: 20px;
-  color: white;
+.wl-wrapper {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  width: 100%;
 }
 
-/* ============================= */
-/* SEARCH */
-/* ============================= */
+/* ======================================= */
+/* LEFT PANEL — stock list                 */
+/* ======================================= */
 
-.search-container {
+.wl-panel {
+  flex: 1;
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ── Search row ── */
+
+.wl-search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.wl-search-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  padding: 7px 12px;
+  transition: border-color 0.15s ease;
+}
+
+.wl-search-box:focus-within {
+  border-color: rgba(99, 179, 237, 0.3);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.wl-search-icon {
+  width: 14px;
+  height: 14px;
+  color: #374151;
+  flex-shrink: 0;
+}
+
+.wl-search {
+  border: none;
+  background: transparent;
+  color: #e2e8f0;
+  font-size: 13px;
+  outline: none;
+  width: 100%;
+  font-family: inherit;
+}
+
+.wl-search::placeholder { color: #374151; }
+
+.wl-count {
+  font-size: 11px;
+  font-weight: 500;
+  color: #374151;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Column headers ── */
+
+.wl-col-headers {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+  padding: 6px 14px;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #374151;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-.search {
-  width: 70%;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  background: rgba(255,255,255,0.08);
-  color: white;
-}
+/* ── List ── */
 
-.counts {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-/* ============================= */
-/* LAYOUT */
-/* ============================= */
-
-.watchlist-layout {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 20px;
-}
-
-/* ============================= */
-/* WATCHLIST LIST */
-/* ============================= */
-
-.watchlist-list {
-  height: 500px;
-  overflow-y: auto;
-margin-top: 10px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 10px;
-}
-
-/* Scrollbar */
-.watchlist-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.watchlist-list::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 10px;
-}
-
-/* List */
-.list {
+.wl-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-/* Item */
-.item {
+/* ── Empty state ── */
+
+.wl-empty {
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: #374151;
+}
+
+/* ======================================= */
+/* STOCK ITEM                              */
+/* ======================================= */
+
+.wl-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition: background 0.12s ease;
+  position: relative;
+}
+
+.wl-item:last-child { border-bottom: none; }
+
+.wl-item:hover,
+.wl-item--open {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.wl-item-row {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  cursor: pointer;
+  padding: 11px 14px;
+  min-height: 44px;
 }
 
-/* Hover */
-.item:hover {
-  background: rgba(255,255,255,0.05);
+/* Stock name */
+.wl-name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
 }
 
-/* Stock Name */
-.item p {
-  font-weight: 500;
-}
+.wl-up   { color: #34d399; }
+.wl-down { color: #f87171; }
 
-/* Info */
-.itemInfo {
+/* Right side of item row */
+.wl-item-right {
   display: flex;
   align-items: center;
-  gap: 6px;
 }
 
-.percent {
+/* Desktop right: hidden on mobile */
+.wl-desktop-right { display: flex; }
+.wl-mobile-right  { display: none; }
+
+/* Meta: percent + price */
+.wl-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wl-percent {
+  display: flex;
+  align-items: center;
   font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-.price {
-  font-size: 14px;
+.wl-price {
+  font-size: 13px;
+  font-weight: 600;
+  color: #cbd5e1;
+  min-width: 58px;
+  text-align: right;
 }
 
-/* COLORS */
-.up {
-  color: #00ff9d;
+/* ======================================= */
+/* DESKTOP ACTION BUTTONS (inline hover)   */
+/* ======================================= */
+
+.wl-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: wlActionsIn 0.12s ease;
 }
 
-.down {
-  color: #ff4d4d;
+@keyframes wlActionsIn {
+  from { opacity: 0; transform: translateX(6px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
-/* ============================= */
-/* ACTION BUTTONS */
-/* ============================= */
-
-.actions button {
-  margin-left: 6px;
+.wl-action-btn {
   border: none;
-  padding: 6px 10px;
   border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
   cursor: pointer;
-}
-
-.buy {
-  background: #2962ff;
-  color: white;
-}
-
-.sell {
-  background: #ff5722;
-  color: white;
-}
-
-.action {
-  background: rgba(255,255,255,0.1);
-  color: white;
-}
-
-/* ============================= */
-/* CHART */
-/* ============================= */
-
-.watchlist-chart {
-  height: 500px;
-margin-top: 10px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 20px;
-
+  font-family: inherit;
+  transition: all 0.12s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 5px 11px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 
-/* Fix chart size */
-.watchlist-chart canvas {
-  max-width: 100% !important;
-  max-height: 100% !important;
+.wl-buy {
+  background: rgba(59, 130, 246, 0.14);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.22);
+}
+.wl-buy:hover {
+  background: rgba(59, 130, 246, 0.26);
+  border-color: rgba(59, 130, 246, 0.5);
 }
 
-/* ============================= */
-/* RESPONSIVE */
-/* ============================= */
+.wl-sell {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+.wl-sell:hover {
+  background: rgba(239, 68, 68, 0.24);
+  border-color: rgba(239, 68, 68, 0.45);
+}
+
+.wl-icon-btn {
+  background: transparent;
+  color: #4b5563;
+  border: 1px solid transparent;
+  padding: 5px 6px;
+}
+.wl-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+}
+
+/* ======================================= */
+/* MOBILE ACTION ROW (slide-down)          */
+/* ======================================= */
+
+.wl-mobile-actions-row {
+  display: none; /* shown only via media query */
+  padding: 0 10px 10px;
+  animation: wlSlideDown 0.15s ease;
+}
+
+@keyframes wlSlideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.wl-actions--mobile {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 6px 8px;
+  gap: 6px;
+}
+
+.wl-actions--mobile .wl-action-btn {
+  flex: 1;
+  justify-content: center;
+  padding: 8px 6px;
+  font-size: 12.5px;
+}
+
+/* ======================================= */
+/* RIGHT PANEL — chart                     */
+/* ======================================= */
+
+.wl-chart-panel {
+  width: 240px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.wl-chart-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #374151;
+  margin: 0 0 12px;
+}
+
+/* ======================================= */
+/* RESPONSIVE                              */
+/* ======================================= */
 
 @media (max-width: 900px) {
-  .watchlist-layout {
-    grid-template-columns: 1fr;
+  .wl-chart-panel {
+    width: 200px;
+  }
+}
+
+@media (max-width: 700px) {
+  /* Stack vertically on mobile */
+  .wl-wrapper {
+    flex-direction: column;
   }
 
-  .watchlist-list {
-    height: 400px;
+  .wl-chart-panel {
+    width: 100%;
   }
 
-  .watchlist-chart {
-    height: 300px;
+  /* On mobile: hide desktop inline actions, show mobile row actions */
+  .wl-desktop-right { display: none; }
+  .wl-mobile-right  { display: flex; }
+
+  .wl-mobile-actions-row { display: block; }
+
+  /* Mobile: item row stays always consistent */
+  .wl-item--open .wl-item-row {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
 }

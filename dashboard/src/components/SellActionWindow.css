@@ -1,0 +1,315 @@
+/* ========================= */
+/* OVERLAY BACKDROP          */
+/* ========================= */
+
+.sell-window-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 99;
+}
+
+/* ========================= */
+/* CONTAINER                 */
+/* ========================= */
+
+.sell-container {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 480px;
+  max-width: calc(100vw - 32px);
+
+  background: #0f1623;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: none;
+  border-radius: 16px 16px 0 0;
+
+  box-shadow:
+    0 -8px 40px rgba(0, 0, 0, 0.6),
+    0 -1px 0 rgba(255, 255, 255, 0.06) inset;
+
+  z-index: 100;
+  cursor: default;
+  overflow: hidden;
+
+  animation: slideUp 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateX(-50%) translateY(100%); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0);   opacity: 1; }
+}
+
+/* ========================= */
+/* HEADER                    */
+/* ========================= */
+
+.sell-window-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sell-window-stock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sell-window-stock-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f1f5f9;
+  letter-spacing: 0.3px;
+}
+
+.sell-window-stock-sub {
+  font-size: 11px;
+  color: #4b5563;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.sell-window-tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* ========================= */
+/* ORDER TYPE TABS           */
+/* ========================= */
+
+.sell-window-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 12px 20px 0;
+}
+
+.sell-tab {
+  font-size: 12px;
+  font-weight: 500;
+  color: #4b5563;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.sell-tab:hover {
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.sell-tab.active {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* ========================= */
+/* FORM BODY                 */
+/* ========================= */
+
+.sell-regular-order {
+  padding: 16px 20px 20px;
+}
+
+.sell-inputs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.sell-inputs fieldset {
+  flex: 1;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 0;
+  background: #161e2e;
+  transition: border-color 0.15s ease;
+  position: relative;
+  cursor: text;
+}
+
+.sell-inputs fieldset:focus-within {
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+}
+
+.sell-inputs fieldset legend {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #4b5563;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-left: 12px;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.sell-inputs fieldset input {
+  border: none;
+  background: transparent;
+  color: #f1f5f9;
+  font-size: 18px;
+  font-weight: 500;
+  width: 100%;
+  padding: 6px 14px 12px;
+  box-sizing: border-box;
+  outline: none;
+  font-family: inherit;
+}
+
+.sell-inputs fieldset input::-webkit-inner-spin-button,
+.sell-inputs fieldset input::-webkit-outer-spin-button {
+  opacity: 0.3;
+}
+
+/* ========================= */
+/* MARGIN INFO ROW           */
+/* ========================= */
+
+.sell-margin-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  margin-top: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sell-margin-info-label {
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.sell-margin-info-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+/* ========================= */
+/* FOOTER / BUTTONS          */
+/* ========================= */
+
+.sell-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 12px;
+}
+
+.sell-buttons-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sell-total-label {
+  font-size: 11px;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.sell-total-amount {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.sell-buttons-right {
+  display: flex;
+  gap: 8px;
+}
+
+/* Cancel button */
+.sell-btn-grey {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+
+  background: rgba(255, 255, 255, 0.05);
+  color: #6b7280;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.15s ease;
+}
+
+.sell-btn-grey:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #9ca3af;
+}
+
+/* Sell button */
+.sell-btn-red {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 28px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  color: #fff;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
+  transition: all 0.15s ease;
+}
+
+.sell-btn-red:hover {
+  background: linear-gradient(135deg, #b91c1c, #dc2626);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.45);
+  transform: translateY(-1px);
+}
+
+.sell-btn-red:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+/* ========================= */
+/* RESPONSIVE                */
+/* ========================= */
+
+@media (max-width: 520px) {
+  .sell-container {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+  }
+}
