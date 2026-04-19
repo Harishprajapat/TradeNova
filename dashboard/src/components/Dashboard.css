@@ -102,20 +102,45 @@ body, html {
   }
 
   .dashboard-title {
-    font-size: 22px;
+    font-size: 20px;
+    margin-bottom: 14px;
   }
 
-  /* STACK CARDS */
+  /* 2-column grid: Portfolio Value full width, Profit + Loss side by side */
   .dashboard-cards {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  /* Portfolio Value card spans both columns */
+  .dashboard-cards .card:first-child {
+    grid-column: 1 / -1;
   }
 
   .card {
-    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
   }
 
-  /* SECTION PADDING */
-  .dashboard-section {
-    padding: 15px;
+  .card p {
+    font-size: 11px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
-}
+
+  .card h2 {
+    font-size: 20px;
+  }
+
+  /* Profit + Loss are half-width so slightly smaller number */
+  .dashboard-cards .card:not(:first-child) h2 {
+    font-size: 18px;
+  }
+
+  .dashboard-section {
+    padding: 14px;
+  }
+} 
