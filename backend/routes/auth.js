@@ -2,52 +2,75 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../model/User")
+const User = require("../model/User");
+const Portfolio = require("../model/UserPortfolio");
 
-// SIGNUP
+const JWT_SECRET = process.env.JWT_SECRET || "tradenova_secret_key";
+
+// ─── SIGNUP ───────────────────────────────────────────
 router.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
-console.log(password);
+
   try {
+    // 1. Check if user already exists
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // 2. Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = new User({
-      name,
-      email,
-      password: hashedPassword,
-    });
-
+    // 3. Create user
+    const user = new User({ name, email, password: hashedPassword });
     await user.save();
-console.log(user.password);
-    res.send("User Registered");
+
+    // 4. Create portfolio with ₹1,00,000 virtual balance
+    const portfolio = new Portfolio({
+      userId: user._id.toString(),
+      balance: 100000,
+      holdings: [],
+      orders: [],
+    });
+    await portfolio.save();
+
+    res.json({ message: "Signup successful" });
+
   } catch (err) {
-    res.status(400).send("User already exists");
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// LOGIN
+// ─── LOGIN ────────────────────────────────────────────
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Check user exists
+    // 1. Find user
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }
 
-    // 2. Compare password (IMPORTANT 🔥)
+    // 2. Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // 3. Generate token (if you already added JWT)
-    const token = "dummy_token"; // or JWT later
+    // 3. Sign real JWT containing userId and name
+    const token = jwt.sign(
+      { userId: user._id.toString(), name: user.name, email: user.email },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
     res.json({
       message: "Login successful",
       token,
+      userId: user._id.toString(),   // ← frontend stores this
+      name: user.name,
     });
 
   } catch (err) {

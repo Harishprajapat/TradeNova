@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
 import BuyActionWindow from "./BuyActionWindow";
 import SellActionWindow from "./SellActionWindow";
 
@@ -9,141 +8,97 @@ const GeneralContext = React.createContext({
   closeBuyWindow: () => {},
   openSellWindow: () => {},
   closeSellWindow: () => {},
+  balance: 100000,
+  holdings: [],
+  orders: [],
+  buyStock: async () => {},
+  sellStock: async () => {},
 });
 
 export const GeneralContextProvider = (props) => {
-  const [isBuyWindowOpen, setIsBuyWindowOpen] = useState(false);
-  const [selectedStockUID, setSelectedStockUID] = useState("");
-
+  const [isBuyWindowOpen, setIsBuyWindowOpen]   = useState(false);
   const [isSellWindowOpen, setIsSellWindowOpen] = useState(false);
-  const [selectedSellStockUID, setSelectedSellStockUID] = useState("");
+  const [selectedStockUID, setSelectedStockUID] = useState("");
+  const [selectedSellUID, setSelectedSellUID]   = useState("");
 
-  const [balance, setBalance] = useState(100000);
+  const [balance, setBalance]   = useState(100000);
   const [holdings, setHoldings] = useState([]);
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders]     = useState([]);
 
-   const updatePortfolio = (data) => {
-  setBalance(data.balance);
-  setHoldings(data.holdings);
-  setOrders(data.orders);
-};
+  // ✅ reads the real MongoDB userId saved by Login
+  const userId = localStorage.getItem("currentUser");
 
-  // 🔥 Get logged-in user
-const userId = localStorage.getItem("currentUser") || "testuser";
-console.log("Current User:", userId);
+  const updatePortfolio = (data) => {
+    setBalance(data.balance ?? 100000);
+    setHoldings(data.holdings ?? []);
+    setOrders(data.orders ?? []);
+  };
 
-  // ✅ FETCH USER PORTFOLIO FROM BACKEND
-  // useEffect(() => {
-  //   const fetchPortfolio = async () => {
-  //     try {
-  //       const res = await axios.get(
-  //         `http://localhost:3002/portfolio/${userId}`
-  //       );
+  // fetch portfolio on mount + every 5 s
+  useEffect(() => {
+    if (!userId) return;
 
-  //       setBalance(res.data.balance);
-  //       setHoldings(res.data.holdings);
-  //       setOrders(res.data.orders);
-  //     } catch (err) {
-  //       console.error("Error fetching portfolio:", err);
-  //     }
-  //   };
+    const fetchPortfolio = async () => {
+      try {
+        const res = await axios.get(`http://localhost:3002/portfolio/${userId}`);
+        updatePortfolio(res.data);
+      } catch (err) {
+        console.error("Portfolio fetch error:", err);
+      }
+    };
 
-  //   if (userId) fetchPortfolio();
-  // }, [userId]);
+    fetchPortfolio();
+    const interval = setInterval(fetchPortfolio, 5000);
+    return () => clearInterval(interval);
+  }, [userId]);
 
-useEffect(() => {
-  const fetchPortfolio = async () => {
+  // ── Buy ──────────────────────────────────────────────
+  const buyStock = async (stockName, qty, price) => {
+    if (!userId) return alert("Please login first");
     try {
-      const res = await axios.get(
-        `http://localhost:3002/portfolio/${userId}`
-      );
-
-      console.log("FETCHED DATA:", res.data); // 🔥 debug
-
+      const res = await axios.post("http://localhost:3002/portfolio/buy", {
+        userId,
+        name: stockName,
+        qty: Number(qty),
+        price: Number(price),
+      });
       updatePortfolio(res.data);
-
     } catch (err) {
-      console.error("Fetch error:", err);
+      const msg = err.response?.data?.message || "Buy failed";
+      alert(msg);
     }
   };
 
-  if (userId) fetchPortfolio();
-
-  const interval = setInterval(fetchPortfolio, 5000);
-  return () => clearInterval(interval);
-
-}, [userId]);
- 
-
-  // 🟢 UI HANDLERS
-  const handleOpenBuyWindow = (uid) => {
-    setIsBuyWindowOpen(true);
-    setSelectedStockUID(uid);
+  // ── Sell ─────────────────────────────────────────────
+  const sellStock = async (stockName, qty, price) => {
+    if (!userId) return alert("Please login first");
+    try {
+      const res = await axios.post("http://localhost:3002/portfolio/sell", {
+        userId,
+        name: stockName,
+        qty: Number(qty),
+        price: Number(price),
+      });
+      updatePortfolio(res.data);
+    } catch (err) {
+      const msg = err.response?.data?.message || "Sell failed";
+      alert(msg);
+    }
   };
 
-  const handleCloseBuyWindow = () => {
-    setIsBuyWindowOpen(false);
-    setSelectedStockUID("");
-  };
-
-  const handleOpenSellWindow = (uid) => {
-    setIsSellWindowOpen(true);
-    setSelectedSellStockUID(uid);
-  };
-
-  const handleCloseSellWindow = () => {
-    setIsSellWindowOpen(false);
-    setSelectedSellStockUID("");
-  };
-
-  // 🔥 BUY STOCK (BACKEND)
-const buyStock = async (stockName, qty, price) => {
-  try {
-    await axios.post("http://localhost:3002/portfolio/buy", {
-      userId,
-      name: stockName,
-      qty: Number(qty),
-      price: Number(price),
-    });
-
-    await axios
-      .get(`http://localhost:3002/portfolio/${userId}`)
-      .then((res) => updatePortfolio(res.data));
-
-  } catch (err) {
-    console.log(err);
-    alert("Buy failed");
-  }
-};
-
-  // 🔴 SELL STOCK (BACKEND)
-const sellStock = async (stockName, qty, price) => {
-  try {
-    await axios.post("http://localhost:3002/portfolio/sell", {
-      userId,
-      name: stockName,
-      qty: Number(qty),
-      price: Number(price),
-    });
-
-    await axios
-      .get(`http://localhost:3002/portfolio/${userId}`)
-      .then((res) => updatePortfolio(res.data));
-
-  } catch (err) {
-    console.log(err);
-    alert("Sell failed");
-  }
-};
+  // ── Window handlers ──────────────────────────────────
+  const handleOpenBuyWindow  = (uid) => { setSelectedStockUID(uid); setIsBuyWindowOpen(true); };
+  const handleCloseBuyWindow = ()    => { setIsBuyWindowOpen(false); setSelectedStockUID(""); };
+  const handleOpenSellWindow  = (uid) => { setSelectedSellUID(uid); setIsSellWindowOpen(true); };
+  const handleCloseSellWindow = ()    => { setIsSellWindowOpen(false); setSelectedSellUID(""); };
 
   return (
     <GeneralContext.Provider
       value={{
-        openBuyWindow: handleOpenBuyWindow,
+        openBuyWindow:  handleOpenBuyWindow,
         closeBuyWindow: handleCloseBuyWindow,
-        openSellWindow: handleOpenSellWindow,
+        openSellWindow:  handleOpenSellWindow,
         closeSellWindow: handleCloseSellWindow,
-
         balance,
         holdings,
         orders,
@@ -153,8 +108,8 @@ const sellStock = async (stockName, qty, price) => {
     >
       {props.children}
 
-      {isBuyWindowOpen && <BuyActionWindow uid={selectedStockUID} />}
-      {isSellWindowOpen && <SellActionWindow uid={selectedSellStockUID} />}
+      {isBuyWindowOpen  && <BuyActionWindow  uid={selectedStockUID} />}
+      {isSellWindowOpen && <SellActionWindow uid={selectedSellUID}  />}
     </GeneralContext.Provider>
   );
 };
