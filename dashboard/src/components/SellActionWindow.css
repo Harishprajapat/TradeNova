@@ -302,6 +302,31 @@
   box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
 }
 
+.sell-balance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+ 
+.sell-balance-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #374151;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+ 
+.sell-balance-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
 /* ========================= */
 /* RESPONSIVE                */
 /* ========================= */

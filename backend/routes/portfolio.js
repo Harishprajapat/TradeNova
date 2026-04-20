@@ -2,91 +2,139 @@ const express = require("express");
 const router = express.Router();
 const Portfolio = require("../model/UserPortfolio");
 
-// 🔥 Get user portfolio
+// ─── GET PORTFOLIO ────────────────────────────────────
 router.get("/:userId", async (req, res) => {
-  const { userId } = req.params;
+  try {
+    const { userId } = req.params;
 
-  let portfolio = await Portfolio.findOne({ userId });
+    let portfolio = await Portfolio.findOne({ userId });
 
-  if (!portfolio) {
-    portfolio = await Portfolio.create({ userId });
+    // safety: if somehow no portfolio exists, create one
+    if (!portfolio) {
+      portfolio = new Portfolio({
+        userId,
+        balance: 100000,
+        holdings: [],
+        orders: [],
+      });
+      await portfolio.save();
+    }
+
+    res.json(portfolio);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Error fetching portfolio" });
   }
-
-  res.json(portfolio);
 });
 
-// 🔥 Buy stock
+// ─── BUY ─────────────────────────────────────────────
 router.post("/buy", async (req, res) => {
-  const { userId, name, qty, price } = req.body;
+  try {
+    const { userId, name, qty, price } = req.body;
+    const totalCost = qty * price;
 
- let portfolio = await Portfolio.findOne({ userId });
+    const portfolio = await Portfolio.findOne({ userId });
+    if (!portfolio) {
+      return res.status(404).json({ message: "Portfolio not found" });
+    }
 
-if (!portfolio) {
-  portfolio = await Portfolio.create({ userId });
-}
+    // Check sufficient balance
+    if (portfolio.balance < totalCost) {
+      return res.status(400).json({ message: "Insufficient balance" });
+    }
 
-  const total = qty * price;
+    // Deduct balance
+    portfolio.balance -= totalCost;
 
-  if (portfolio.balance < total) {
-    return res.status(400).json({ error: "Not enough balance" });
+    // Update holdings — add to existing or create new
+    const existingIndex = portfolio.holdings.findIndex((h) => h.name === name);
+    if (existingIndex >= 0) {
+      const existing = portfolio.holdings[existingIndex];
+      const newQty   = existing.qty + qty;
+      // recalculate average price
+      const newAvg   = ((existing.avg ?? existing.price) * existing.qty + price * qty) / newQty;
+      portfolio.holdings[existingIndex].qty   = newQty;
+      portfolio.holdings[existingIndex].avg   = parseFloat(newAvg.toFixed(2));
+      portfolio.holdings[existingIndex].price = price;
+    } else {
+      portfolio.holdings.push({ name, qty, price, avg: price });
+    }
+
+    // Log order
+    portfolio.orders.push({
+      type: "BUY",
+      name,
+      qty,
+      price,
+      time: new Date(),
+    });
+
+    await portfolio.save();
+
+    res.json({
+      message: "Buy successful",
+      balance: portfolio.balance,
+      holdings: portfolio.holdings,
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Buy failed" });
   }
-
-  portfolio.balance -= total;
-
-  const existing = portfolio.holdings.find((s) => s.name === name);
-
-  if (existing) {
-    existing.qty += qty;
-    existing.price = price;
-  } else {
-    portfolio.holdings.push({ name, qty, price });
-  }
-
-  portfolio.orders.push({
-    type: "BUY",
-    name,
-    qty,
-    price,
-    time: new Date(),
-  });
-
-  await portfolio.save();
-
-  res.json(portfolio);
 });
 
-// 🔥 Sell stock
+// ─── SELL ─────────────────────────────────────────────
 router.post("/sell", async (req, res) => {
-  const { userId, name, qty, price } = req.body;
+  try {
+    const { userId, name, qty, price } = req.body;
 
-  let portfolio = await Portfolio.findOne({ userId });
+    const portfolio = await Portfolio.findOne({ userId });
+    if (!portfolio) {
+      return res.status(404).json({ message: "Portfolio not found" });
+    }
 
-if (!portfolio) {
-  return res.status(400).json({ error: "Portfolio not found" });
-}
+    // Find holding
+    const holdingIndex = portfolio.holdings.findIndex((h) => h.name === name);
+    if (holdingIndex < 0) {
+      return res.status(400).json({ message: "Stock not in holdings" });
+    }
 
-  const stock = portfolio.holdings.find((s) => s.name === name);
+    const holding = portfolio.holdings[holdingIndex];
+    if (holding.qty < qty) {
+      return res.status(400).json({ message: "Not enough shares to sell" });
+    }
 
-  if (!stock || stock.qty < qty) {
-    return res.status(400).json({ error: "Not enough stock" });
+    // Add balance back
+    portfolio.balance += qty * price;
+
+    // Update or remove holding
+    if (holding.qty === qty) {
+      portfolio.holdings.splice(holdingIndex, 1);
+    } else {
+      portfolio.holdings[holdingIndex].qty -= qty;
+    }
+
+    // Log order
+    portfolio.orders.push({
+      type: "SELL",
+      name,
+      qty,
+      price,
+      time: new Date(),
+    });
+
+    await portfolio.save();
+
+    res.json({
+      message: "Sell successful",
+      balance: portfolio.balance,
+      holdings: portfolio.holdings,
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Sell failed" });
   }
-
-  stock.qty -= qty;
-  portfolio.balance += qty * price;
-
-  portfolio.holdings = portfolio.holdings.filter((s) => s.qty > 0);
-
-  portfolio.orders.push({
-    type: "SELL",
-    name,
-    qty,
-    price,
-    time: new Date(),
-  });
-
-  await portfolio.save();
-
-  res.json(portfolio);
 });
 
 module.exports = router;

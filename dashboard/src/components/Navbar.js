@@ -11,10 +11,15 @@ export default function Navbar() {
 
   const isActive = (path) => location.pathname === path;
 
-  const userInitials =
-    JSON.parse(localStorage.getItem("user") || "{}")
-      ?.name?.slice(0, 2)
-      .toUpperCase() || "HP";
+const userName = localStorage.getItem("userName") || "";
+
+const userInitials = userName
+  .trim()
+  .split(" ")
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((word) => word[0].toUpperCase())
+  .join("") || "?";
 
   return (
     <div className="navbar">
