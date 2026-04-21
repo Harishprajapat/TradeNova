@@ -11,56 +11,64 @@ import { isAuthenticated } from "./utils/auth";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { GeneralContextProvider } from "./components/GeneralContext";
+
+// ✅ ProtectedRoute is a COMPONENT — re-evaluates isAuthenticated()
+// on every render so it always reads the latest localStorage value.
+// The old approach called isAuthenticated() directly inside App()
+// which only ran once on first load and never updated.
+const ProtectedRoute = ({ children }) => {
+  return isAuthenticated() ? children : <Navigate to="/login" replace />;
+};
+
+// ✅ PublicRoute redirects already-logged-in users away from /login and /signup
+const PublicRoute = ({ children }) => {
+  return isAuthenticated() ? <Navigate to="/" replace /> : children;
+};
+
 function App() {
   return (
     <BrowserRouter>
       <GeneralContextProvider>
         <Routes>
+
+          {/* Protected pages — inside Layout (has Navbar) */}
           <Route element={<Layout />}>
             <Route
               path="/"
-              element={
-                isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />
-              }
+              element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
             />
             <Route
               path="/dashboard"
-              element={
-                isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />
-              }
+              element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
             />
-
             <Route
               path="/orders"
-              element={
-                isAuthenticated() ? <Orders /> : <Navigate to="/login" />
-              }
+              element={<ProtectedRoute><Orders /></ProtectedRoute>}
             />
-
             <Route
               path="/holdings"
-              element={
-                isAuthenticated() ? <Holdings /> : <Navigate to="/login" />
-              }
+              element={<ProtectedRoute><Holdings /></ProtectedRoute>}
             />
-
             <Route
               path="/positions"
-              element={
-                isAuthenticated() ? <Positions /> : <Navigate to="/login" />
-              }
+              element={<ProtectedRoute><Positions /></ProtectedRoute>}
             />
-
             <Route
               path="/watchlist"
-              element={
-                isAuthenticated() ? <WatchList /> : <Navigate to="/login" />
-              }
+              element={<ProtectedRoute><WatchList /></ProtectedRoute>}
             />
           </Route>
 
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          {/* Public pages — redirect to dashboard if already logged in */}
+          <Route
+            path="/login"
+            element={<PublicRoute><Login /></PublicRoute>}
+          />
+          <Route
+            path="/signup"
+            element={<PublicRoute><Signup /></PublicRoute>}
+          />
+
         </Routes>
         <ToastContainer position="top-right" autoClose={2000} />
       </GeneralContextProvider>
