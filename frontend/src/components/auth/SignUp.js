@@ -14,7 +14,7 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await axios.post("http://localhost:3002/auth/signup", data);
+    await axios.post("https://tradenova-backend-a300.onrender.com/auth/signup", data);
 
     
     toast.success("Signup successful 🚀");

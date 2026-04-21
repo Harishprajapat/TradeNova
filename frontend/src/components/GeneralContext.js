@@ -40,7 +40,7 @@ export const GeneralContextProvider = (props) => {
 
     const fetchPortfolio = async () => {
       try {
-        const res = await axios.get(`http://localhost:3002/portfolio/${userId}`);
+        const res = await axios.get(`https://tradenova-backend-a300.onrender.com/portfolio/${userId}`);
         updatePortfolio(res.data);
       } catch (err) {
         console.error("Portfolio fetch error:", err);
@@ -56,7 +56,7 @@ export const GeneralContextProvider = (props) => {
   const buyStock = async (stockName, qty, price) => {
     if (!userId) return alert("Please login first");
     try {
-      const res = await axios.post("http://localhost:3002/portfolio/buy", {
+      const res = await axios.post("https://tradenova-backend-a300.onrender.com/portfolio/buy", {
         userId,
         name: stockName,
         qty: Number(qty),
@@ -73,7 +73,7 @@ export const GeneralContextProvider = (props) => {
   const sellStock = async (stockName, qty, price) => {
     if (!userId) return alert("Please login first");
     try {
-      const res = await axios.post("http://localhost:3002/portfolio/sell", {
+      const res = await axios.post("https://tradenova-backend-a300.onrender.com/portfolio/sell", {
         userId,
         name: stockName,
         qty: Number(qty),
