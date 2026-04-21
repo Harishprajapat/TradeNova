@@ -194,6 +194,9 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/portfolio", portfolioRoutes);
 
+app.get("/", (req, res) => {
+  res.send("TradeNova Backend is Running 🚀");
+});
 
 app.get("/allHoldings", async (req, res) => {
   let allHoldings = await HoldingsModel.find({});

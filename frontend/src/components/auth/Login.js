@@ -11,7 +11,7 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:3002/auth/login", data);
+      const res = await axios.post("https://tradenova-backend-a300.onrender.com/auth/login", data);
 
       // ✅ Save token, userId, and name — all three needed
       localStorage.setItem("token", res.data.token);

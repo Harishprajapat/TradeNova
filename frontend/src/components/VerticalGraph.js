@@ -38,7 +38,7 @@ export const options = {
 export function VerticalGraph({ data }) {
     const options = {
     responsive: true,
-    maintainAspectRatio: false, // 🔥 MUST ADD
+    maintainAspectRatio: false, 
   };
   return <Bar options={options} data={data} />;
 }
