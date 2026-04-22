@@ -17,6 +17,7 @@ const Holdings = () => {
   const [flashMap, setFlashMap]         = useState({});   // { stockName: 'up'|'down' }
   const prevPricesRef                   = useRef({});
   const intervalRef                     = useRef(null);
+  const livePricesCount = Object.keys(livePrices).length;
 
   /* ── fetch holdings once ── */
   useEffect(() => {
@@ -34,7 +35,7 @@ const Holdings = () => {
 
   /* ── tick every 2 s ── */
   useEffect(() => {
-    if (Object.keys(livePrices).length === 0) return;
+      if (livePricesCount === 0) return;
 
     intervalRef.current = setInterval(() => {
       setLivePrices((prev) => {
@@ -54,7 +55,7 @@ const Holdings = () => {
     }, 2000);
 
     return () => clearInterval(intervalRef.current);
-  }, [Object.keys(livePrices).length]); // re-run only when stocks load
+  }, [livePricesCount]); // re-run only when stocks load
 
   /* ── derived summary numbers ── */
   const totalInvested = allHoldings.reduce(
