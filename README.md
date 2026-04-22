@@ -5,6 +5,10 @@
 TradeNova is a full-stack paper trading platform that allows users to simulate stock trading with virtual money. It provides a realistic trading experience with user-specific portfolios, live price simulation, and a modern responsive UI.
 
 ---
+![React](https://img.shields.io/badge/Frontend-React-blue)
+![Node](https://img.shields.io/badge/Backend-Node.js-green)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)
+![Status](https://img.shields.io/badge/Status-Live-success)
 
 ## 📌 Features
 
