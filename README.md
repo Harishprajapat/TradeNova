@@ -100,7 +100,13 @@ npm start
 - Focused on UI/UX and real-world functionality
 ---
 ### 📸 Screenshots
-Add your screenshots here (Dashboard, Holdings, Mobile View)
+<img width="1914" height="967" alt="Screenshot 2026-04-22 115709" src="https://github.com/user-attachments/assets/10739a7c-45da-44ba-a3cc-d2ecc9bb9b85" />
+---
+<img width="1918" height="970" alt="image" src="https://github.com/user-attachments/assets/5a131ffb-2667-4b93-8036-336ad5dce9df" />
+
+
+
+
 ---
 ### 📈 Future Improvements
 - Real stock market API integration
