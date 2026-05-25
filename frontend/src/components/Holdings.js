@@ -1,215 +1,258 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import React, { useContext, useMemo } from "react";
+import { motion } from "framer-motion";
+import { BarChart3, ShieldHalf, TriangleAlert, TrendingUp } from "lucide-react";
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  CartesianGrid,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import GeneralContext from "./GeneralContext";
+import GlassPanel from "./ui/GlassPanel";
+import Badge from "./ui/Badge";
+import SectionHeader from "./ui/SectionHeader";
 import { VerticalGraph } from "./VerticalGraph";
-import "./Holding.css";
+import { DoughoutChart } from "./DoughnoutChart";
+import { formatINR, formatPercent } from "../utils/format";
 
-/* ─── price simulator ───────────────────────────────────
-   Each stock gets a random walk: every 2 s the price
-   moves ±0–1.2 % so it feels like a live feed.          */
-const simulatePriceMove = (price) => {
-  const change = (Math.random() - 0.48) * 0.012; // slight upward bias
-  return Math.max(1, parseFloat((price * (1 + change)).toFixed(2)));
-};
+const trendData = [
+  { day: "1W", value: 118 },
+  { day: "2W", value: 124 },
+  { day: "3W", value: 122 },
+  { day: "4W", value: 131 },
+  { day: "5W", value: 136 },
+  { day: "6W", value: 142 },
+];
 
-const Holdings = () => {
-  const [allHoldings, setAllHoldings]   = useState([]);
-  const [livePrices, setLivePrices]     = useState({});   // { stockName: price }
-  const [flashMap, setFlashMap]         = useState({});   // { stockName: 'up'|'down' }
-  const prevPricesRef                   = useRef({});
-  const intervalRef                     = useRef(null);
-  const livePricesCount = Object.keys(livePrices).length;
+const sectorPalette = ["#29b6f6", "#22c55e", "#f59e0b", "#a855f7", "#ef4444", "#14b8a6"];
 
-  /* ── fetch holdings once ── */
-  useEffect(() => {
-    axios.get("https://tradenova-backend-a300.onrender.com/allHoldings").then((res) => {
-      const data = res.data;
-      setAllHoldings(data);
+export default function Holdings() {
+  const { holdings, loading } = useContext(GeneralContext);
 
-      // seed live prices from DB price
-      const initial = {};
-      data.forEach((s) => { initial[s.name] = s.price; });
-      setLivePrices(initial);
-      prevPricesRef.current = { ...initial };
-    });
-  }, []);
+  const summary = useMemo(() => {
+    const invested = holdings.reduce((sum, stock) => sum + stock.avg * stock.qty, 0);
+    const current = holdings.reduce((sum, stock) => sum + (stock.price ?? stock.avg) * stock.qty, 0);
+    const pnl = current - invested;
+    const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
+    return { invested, current, pnl, pnlPct };
+  }, [holdings]);
 
-  /* ── tick every 2 s ── */
-  useEffect(() => {
-      if (livePricesCount === 0) return;
-
-    intervalRef.current = setInterval(() => {
-      setLivePrices((prev) => {
-        const next    = {};
-        const flashes = {};
-        Object.entries(prev).forEach(([name, price]) => {
-          const newPrice = simulatePriceMove(price);
-          next[name]     = newPrice;
-          flashes[name]  = newPrice >= price ? "up" : "down";
-        });
-        prevPricesRef.current = { ...next };
-        setFlashMap(flashes);
-        // clear flash highlight after 600 ms
-        setTimeout(() => setFlashMap({}), 600);
-        return next;
-      });
-    }, 2000);
-
-    return () => clearInterval(intervalRef.current);
-  }, [livePricesCount]); // re-run only when stocks load
-
-  /* ── derived summary numbers ── */
-  const totalInvested = allHoldings.reduce(
-    (sum, s) => sum + s.avg * s.qty, 0
+  const chartData = useMemo(
+    () => ({
+      labels: holdings.map((stock) => stock.name),
+      datasets: [
+        {
+          data: holdings.map((stock) => (stock.price ?? stock.avg) * stock.qty),
+        },
+      ],
+    }),
+    [holdings]
   );
-  const totalCurrent = allHoldings.reduce(
-    (sum, s) => sum + (livePrices[s.name] ?? s.price) * s.qty, 0
-  );
-  const totalPnL      = totalCurrent - totalInvested;
-  const totalPnLPct   = totalInvested > 0
-    ? ((totalPnL / totalInvested) * 100).toFixed(2)
-    : "0.00";
-  const isOverallProfit = totalPnL >= 0;
 
-  /* ── chart data (uses live prices) ── */
-  const labels = allHoldings.map((s) => s.name);
-  const data = {
-    labels,
+  const donutData = {
+    labels: holdings.map((stock) => stock.name),
     datasets: [
       {
-        label: "Current Value (₹)",
-        data: allHoldings.map(
-          (s) => ((livePrices[s.name] ?? s.price) * s.qty).toFixed(2)
-        ),
-        backgroundColor: allHoldings.map((s) => {
-          const ltp  = livePrices[s.name] ?? s.price;
-          const curr = ltp * s.qty;
-          const inv  = s.avg * s.qty;
-          return curr >= inv
-            ? "rgba(34, 197, 94, 0.6)"
-            : "rgba(239, 68, 68, 0.6)";
-        }),
-        borderColor: allHoldings.map((s) => {
-          const ltp  = livePrices[s.name] ?? s.price;
-          const curr = ltp * s.qty;
-          const inv  = s.avg * s.qty;
-          return curr >= inv ? "rgba(34, 197, 94, 1)" : "rgba(239, 68, 68, 1)";
-        }),
-        borderWidth: 1,
-        borderRadius: 6,
+        data: holdings.map((stock) => stock.qty * stock.avg),
+        backgroundColor: sectorPalette,
       },
     ],
   };
 
   return (
-    <div className="holdings-container">
+    <div className="space-y-6">
+      <SectionHeader
+        eyebrow="Portfolio"
+        title="Holdings overview"
+        subtitle="A clearer breakdown of invested capital, live value, and asset-level performance."
+        action={<Badge tone="success">{holdings.length} live holdings</Badge>}
+      />
 
-      {/* ── Header ── */}
-      <div className="holdings-header">
-        <div>
-          <h3 className="title">Holdings</h3>
-          <span className="holdings-subtitle">
-            {allHoldings.length} stocks · live prices updating
-          </span>
-        </div>
-        <div className="live-badge">
-          <span className="live-dot" />
-          Live
-        </div>
-      </div>
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {[
+          {
+            label: "Invested capital",
+            value: formatINR(summary.invested, 2),
+            delta: "Cost basis",
+            tone: "neutral",
+            icon: <ShieldHalf className="h-4 w-4" />,
+          },
+          {
+            label: "Current value",
+            value: formatINR(summary.current, 2),
+            delta: "Market marked",
+            tone: "accent",
+            icon: <TrendingUp className="h-4 w-4" />,
+          },
+          {
+            label: "Total P&L",
+            value: formatINR(Math.abs(summary.pnl), 2),
+            delta: formatPercent(summary.pnlPct),
+            tone: summary.pnl >= 0 ? "success" : "danger",
+            icon: <BarChart3 className="h-4 w-4" />,
+          },
+          {
+            label: "Risk view",
+            value: "Balanced",
+            delta: "Within target",
+            tone: "success",
+            icon: <TriangleAlert className="h-4 w-4" />,
+          },
+        ].map((item) => (
+          <motion.div key={item.label} whileHover={{ y: -2 }}>
+            <GlassPanel>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.24em] text-slate-500">{item.label}</p>
+                  <h3 className="mt-3 font-display text-2xl font-semibold text-white">{item.value}</h3>
+                  <p className="mt-2 text-sm text-slate-400">{item.delta}</p>
+                </div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/5 text-slate-200">
+                  {item.icon}
+                </div>
+              </div>
+              <div className="mt-4">
+                <Badge tone={item.tone}>{item.label}</Badge>
+              </div>
+            </GlassPanel>
+          </motion.div>
+        ))}
+      </section>
 
-      {/* ── Summary cards ── */}
-      <div className="summary-row">
-        <div className="summary-card">
-          <p className="summary-label">Total Invested</p>
-          <h4 className="summary-value neutral">
-            ₹{totalInvested.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-          </h4>
-        </div>
-        <div className="summary-card">
-          <p className="summary-label">Current Value</p>
-          <h4 className="summary-value neutral">
-            ₹{totalCurrent.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-          </h4>
-        </div>
-        <div className="summary-card">
-          <p className="summary-label">Total P&amp;L</p>
-          <h4 className={`summary-value ${isOverallProfit ? "profit" : "loss"}`}>
-            {isOverallProfit ? "+" : ""}
-            ₹{Math.abs(totalPnL).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-            <span className="summary-pct">
-              &nbsp;({isOverallProfit ? "+" : "-"}{Math.abs(totalPnLPct)}%)
-            </span>
-          </h4>
-        </div>
-      </div>
-
-      {/* ── Main grid: table + chart ── */}
-      <div className="main-grid">
-
-        {/* TABLE */}
-        <div className="table-section">
-          <div className="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Instrument</th>
-                  <th>Qty</th>
-                  <th>Avg Cost</th>
-                  <th>LTP</th>
-                  <th>Invested</th>
-                  <th>Cur. Value</th>
-                  <th>P&amp;L</th>
-                  <th>P&amp;L %</th>
-                </tr>
-              </thead>
-              <tbody>
-                {allHoldings.map((stock, index) => {
-                  const ltp       = livePrices[stock.name] ?? stock.price;
-                  const invested  = stock.avg * stock.qty;
-                  const currVal   = ltp * stock.qty;
-                  const pnl       = currVal - invested;
-                  const pnlPct    = ((pnl / invested) * 100).toFixed(2);
-                  const isProfit  = pnl >= 0;
-                  const profClass = isProfit ? "profit" : "loss";
-                  const flash     = flashMap[stock.name];
-
-                  return (
-                    <tr key={index} className="holding-row">
-                      <td className="stock-name-cell">{stock.name}</td>
-                      <td className="muted">{stock.qty}</td>
-                      <td className="muted">₹{stock.avg.toFixed(2)}</td>
-                      <td className={`ltp-cell ${flash ? `flash-${flash}` : ""}`}>
-                        ₹{ltp.toFixed(2)}
-                        {flash === "up"   && <span className="tick up-tick">▲</span>}
-                        {flash === "down" && <span className="tick down-tick">▼</span>}
-                      </td>
-                      <td className="muted">₹{invested.toFixed(2)}</td>
-                      <td>₹{currVal.toFixed(2)}</td>
-                      <td className={profClass}>
-                        {isProfit ? "+" : ""}₹{Math.abs(pnl).toFixed(2)}
-                      </td>
-                      <td className={profClass}>
-                        {isProfit ? "+" : ""}{pnlPct}%
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+      <section className="grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
+        <GlassPanel>
+          <SectionHeader
+            eyebrow="Holdings matrix"
+            title="Asset-level performance"
+            subtitle="A more premium table layout for positions, pricing, and quick comparison."
+          />
+          <div className="mt-6 overflow-hidden rounded-3xl border border-white/[0.08]">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-white/[0.08] text-left">
+                <thead className="bg-white/[0.03]">
+                  <tr className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                    <th className="px-4 py-4">Instrument</th>
+                    <th className="px-4 py-4">Qty</th>
+                    <th className="px-4 py-4">Avg</th>
+                    <th className="px-4 py-4">LTP</th>
+                    <th className="px-4 py-4">Invested</th>
+                    <th className="px-4 py-4">Value</th>
+                    <th className="px-4 py-4">P&L</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/[0.08]">
+                  {loading
+                    ? Array.from({ length: 5 }).map((_, index) => (
+                        <tr key={index} className="animate-pulse">
+                          {Array.from({ length: 7 }).map((__, cellIndex) => (
+                            <td key={cellIndex} className="px-4 py-5">
+                              <div className="h-3 rounded-full bg-white/[0.08]" />
+                            </td>
+                          ))}
+                        </tr>
+                      ))
+                    : holdings.map((stock) => {
+                        const ltp = stock.price ?? stock.avg;
+                        const invested = stock.avg * stock.qty;
+                        const value = ltp * stock.qty;
+                        const pnl = value - invested;
+                        const isPositive = pnl >= 0;
+                        return (
+                          <tr key={stock.name} className="transition hover:bg-white/[0.03]">
+                            <td className="px-4 py-5">
+                              <div>
+                                <p className="font-semibold text-white">{stock.name}</p>
+                                <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">
+                                  {isPositive ? "Gain" : "Loss"} / Live
+                                </p>
+                              </div>
+                            </td>
+                            <td className="px-4 py-5 text-slate-300">{stock.qty}</td>
+                            <td className="px-4 py-5 text-slate-300">{formatINR(stock.avg, 2)}</td>
+                            <td className="px-4 py-5 text-slate-200">{formatINR(ltp, 2)}</td>
+                            <td className="px-4 py-5 text-slate-300">{formatINR(invested, 2)}</td>
+                            <td className="px-4 py-5 text-slate-200">{formatINR(value, 2)}</td>
+                            <td className={`px-4 py-5 font-semibold ${isPositive ? "text-emerald-300" : "text-rose-300"}`}>
+                              {isPositive ? "+" : ""}
+                              {formatINR(Math.abs(pnl), 2)}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </GlassPanel>
 
-        {/* CHART */}
-        <div className="graph-section">
-          <div className="graph-card">
-            <p className="graph-title">Portfolio Breakdown</p>
-            <VerticalGraph data={data} />
-          </div>
-        </div>
-      </div>
+        <div className="space-y-6">
+          <GlassPanel>
+            <SectionHeader
+              eyebrow="Composition"
+              title="Portfolio allocation"
+              subtitle="A clean visual split of holdings by value."
+            />
+            <div className="mt-5 h-[280px]">
+              <DoughoutChart data={donutData} />
+            </div>
+          </GlassPanel>
 
+          <GlassPanel>
+            <SectionHeader
+              eyebrow="Performance"
+              title="Rolling trend"
+              subtitle="A compact trend line that shows whether your book is drifting upward."
+            />
+            <div className="mt-5 h-[240px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={trendData}>
+                  <defs>
+                    <linearGradient id="holdingsFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#22c55e" stopOpacity={0.38} />
+                      <stop offset="100%" stopColor="#22c55e" stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid stroke="rgba(148,163,184,0.08)" vertical={false} />
+                  <XAxis dataKey="day" tick={{ fill: "#94a3b8", fontSize: 12 }} />
+                  <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} />
+                  <Tooltip
+                    contentStyle={{
+                      background: "rgba(3, 7, 18, 0.95)",
+                      border: "1px solid rgba(148,163,184,0.18)",
+                      borderRadius: 16,
+                      color: "#fff",
+                      fontSize: 12,
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#22c55e"
+                    strokeWidth={2.4}
+                    fill="url(#holdingsFill)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </GlassPanel>
+
+          <GlassPanel>
+            <SectionHeader
+              eyebrow="Allocation detail"
+              title="Breakdown chart"
+              subtitle="A bar chart that makes it easier to compare position weights."
+            />
+            <div className="mt-5 h-[240px]">
+              <VerticalGraph data={chartData} />
+            </div>
+          </GlassPanel>
+        </div>
+      </section>
     </div>
   );
-};
+}
 
-export default Holdings;
+

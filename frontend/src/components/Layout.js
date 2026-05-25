@@ -1,16 +1,9 @@
-import { Outlet } from "react-router-dom";
-import Navbar from "./Navbar";
-
+import AppShell from "./layout/AppShell";
 
 const Layout = () => {
-
-  return (
-    <>
-      <Navbar />
-      <Outlet />
-    
-    </>
-  );
+  return <AppShell />;
 };
 
 export default Layout;
+
+
