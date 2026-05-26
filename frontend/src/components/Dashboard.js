@@ -4,11 +4,8 @@ import {
   Activity,
   ArrowUpRight,
   Brain,
-  BriefcaseBusiness,
   Clock3,
-  Radar,
   ShieldAlert,
-  TrendingUp,
   Wallet,
 } from "lucide-react";
 import {
@@ -20,16 +17,15 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useNavigate } from "react-router-dom";
 import GeneralContext from "./GeneralContext";
 import { watchlist } from "../data/data";
 import GlassPanel from "./ui/GlassPanel";
-import MetricCard from "./ui/MetricCard";
 import Badge from "./ui/Badge";
 import Button from "./ui/Button";
 import SectionHeader from "./ui/SectionHeader";
 import Sparkline from "./ui/Sparkline";
-import { formatINR, formatPercent } from "../utils/format";
-import { useNavigate } from "react-router-dom";
+import { formatINR } from "../utils/format";
 
 const areaData = [
   { day: "Mon", value: 108 },
@@ -41,7 +37,7 @@ const areaData = [
   { day: "Sun", value: 135 },
 ];
 
-const sectorCards = [
+const allocation = [
   { label: "Technology", pct: 34, tone: "accent" },
   { label: "Financials", pct: 22, tone: "success" },
   { label: "Energy", pct: 14, tone: "warning" },
@@ -49,13 +45,36 @@ const sectorCards = [
   { label: "Industrial", pct: 12, tone: "danger" },
 ];
 
+function CompactStat({ label, value, delta, note, tone = "neutral", icon }) {
+  return (
+    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">{label}</p>
+          <div className="mt-2 font-display text-xl font-semibold text-white sm:text-2xl">
+            {value}
+          </div>
+        </div>
+        <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.04] text-slate-200">
+          {icon}
+        </div>
+      </div>
+      <div className="mt-3">
+        <Badge tone={tone}>{delta}</Badge>
+      </div>
+      {note ? <p className="mt-2 text-xs text-slate-500">{note}</p> : null}
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { balance, holdings, orders, loading } = useContext(GeneralContext);
+  const { balance, holdings, orders } = useContext(GeneralContext);
 
-  const portfolioValue = useMemo(() => {
-    return holdings.reduce((sum, stock) => sum + stock.qty * (stock.price || stock.avg), balance);
-  }, [balance, holdings]);
+  const portfolioValue = useMemo(
+    () => holdings.reduce((sum, stock) => sum + stock.qty * (stock.price || stock.avg), balance),
+    [balance, holdings]
+  );
 
   const invested = useMemo(
     () => holdings.reduce((sum, stock) => sum + stock.qty * stock.avg, 0),
@@ -63,129 +82,101 @@ export default function Dashboard() {
   );
 
   const pnl = portfolioValue - invested;
-  const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
-  const profitable = pnl >= 0;
+  const isPositive = pnl >= 0;
+  const openPositions = holdings.length;
+  const marketSentiment = isPositive ? "Risk-on" : "Cautious";
+  const dayChange = isPositive ? "+1.8%" : "-0.9%";
+  const netExposure = invested > 0 ? ((invested / portfolioValue) * 100).toFixed(0) : "0";
+  const startingCapital = 100000;
 
-  const metrics = [
+  const summaryStats = [
     {
-      label: "Portfolio value",
-      value: formatINR(portfolioValue, 2),
-      delta: formatPercent(pnlPct),
-      tone: profitable ? "success" : "danger",
-      footnote: `${holdings.length} active holdings linked to your live portfolio`,
+      label: "Cash balance",
+      value: formatINR(balance, 0),
+      delta: "Paper money",
+      note: `Starts at ${formatINR(startingCapital, 0)} and updates after each trade`,
+      tone: "accent",
       icon: <Wallet className="h-4 w-4" />,
     },
     {
-      label: "Cash balance",
-      value: formatINR(balance, 2),
-      delta: "+2.8% vs yesterday",
-      tone: "accent",
-      footnote: "Immediate buying power available for new orders",
-      icon: <BriefcaseBusiness className="h-4 w-4" />,
+      label: "Net exposure",
+      value: `${netExposure}%`,
+      delta: `${holdings.length} books`,
+      note: "Capital currently deployed",
+      tone: "neutral",
+      icon: <ShieldAlert className="h-4 w-4" />,
     },
     {
-      label: "Realized P&L",
-      value: formatINR(Math.abs(pnl), 2),
-      delta: profitable ? "Positive" : "Under water",
-      tone: profitable ? "success" : "danger",
-      footnote: "Mark-to-market view across current holdings",
-      icon: <TrendingUp className="h-4 w-4" />,
+      label: "Sentiment",
+      value: marketSentiment,
+      delta: dayChange,
+      tone: isPositive ? "success" : "warning",
+      icon: <ShieldAlert className="h-4 w-4" />,
     },
     {
-      label: "Active orders",
-      value: orders.length.toString().padStart(2, "0"),
-      delta: "Streaming feed",
-      tone: "accent",
-      footnote: "Recent trades and queued executions",
+      label: "Open positions",
+      value: openPositions.toString().padStart(2, "0"),
+      delta: `${orders.length} orders`,
+      tone: "neutral",
       icon: <Activity className="h-4 w-4" />,
     },
   ];
 
-  const insights = [
-    {
-      title: "AI market pulse",
-      body: "Momentum remains constructive in large-cap financials. Risk appetite is still tilted toward quality names.",
-    },
-    {
-      title: "Rebalance suggestion",
-      body: "Trim the weakest 10% of positions and move capital into higher relative-strength names from the watchlist.",
-    },
-    {
-      title: "Risk snapshot",
-      body: "Portfolio beta is balanced. Volatility exposure is controlled, but earnings-season gaps remain the key risk.",
-    },
-  ];
-
-  const activity = orders.slice().reverse().slice(0, 4);
+  const activity = orders.slice().reverse().slice(0, 3);
+  const topWatchlist = watchlist.slice(0, 5);
 
   return (
-    <div className="space-y-6">
-      <section className="grid gap-6 xl:grid-cols-[1.35fr_0.95fr]">
-        <GlassPanel className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(41,182,246,0.16),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.12),transparent_22%)]" />
-          <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-2xl">
-              <Badge tone="accent">Portfolio command center</Badge>
-              <h1 className="mt-4 font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-                A cleaner way to watch markets, manage risk, and place trades.
-              </h1>
-              <p className="mt-4 max-w-xl text-sm leading-7 text-slate-400 sm:text-base">
-                TradeNova combines live market context, portfolio intelligence, and a calm fintech UI designed for serious trading workflows.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Button onClick={() => navigate("/watchlist")}>
-                  Open watchlist
-                  <ArrowUpRight className="h-4 w-4" />
-                </Button>
-                <Button variant="secondary" onClick={() => navigate("/orders")}>
-                  View orders
-                  <Clock3 className="h-4 w-4" />
-                </Button>
-              </div>
+    <div className="space-y-5">
+      <GlassPanel className="p-4 sm:p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge tone="success">Live</Badge>
+              <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-500">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                Market open
+              </span>
             </div>
-
-            <div className="grid min-w-[240px] gap-3 sm:grid-cols-2 lg:grid-cols-1">
-              <div className="rounded-3xl border border-white/[0.08] bg-slate-950/40 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Market tone</p>
-                <p className="mt-3 font-display text-2xl font-semibold text-white">Constructive</p>
-                <div className="mt-3 h-16">
-                  <Sparkline
-                    data={[
-                      { value: 12 },
-                      { value: 18 },
-                      { value: 16 },
-                      { value: 24 },
-                      { value: 22 },
-                      { value: 30 },
-                    ]}
-                  />
-                </div>
-              </div>
-              <div className="rounded-3xl border border-white/[0.08] bg-slate-950/40 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-slate-500">AI insights</p>
-                <p className="mt-3 font-display text-2xl font-semibold text-white">3 fresh signals</p>
-                <p className="mt-2 text-sm text-slate-400">Updated from relative strength, volume, and portfolio drift.</p>
-              </div>
-            </div>
+            <h1 className="mt-3 font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+              Portfolio overview
+            </h1>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">
+              Net exposure, day P&L, sentiment, and open positions in one compact view.
+            </p>
           </div>
-        </GlassPanel>
 
+          <div className="flex flex-wrap gap-2">
+            <Button variant="secondary" onClick={() => navigate("/orders")}>
+              Orders
+              <Clock3 className="h-4 w-4" />
+            </Button>
+            <Button onClick={() => navigate("/watchlist")}>
+              Watchlist
+              <ArrowUpRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {summaryStats.map((stat) => (
+            <CompactStat key={stat.label} {...stat} />
+          ))}
+        </div>
+      </GlassPanel>
+
+      <section className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
         <GlassPanel>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Portfolio trend</p>
-              <h2 className="mt-2 font-display text-xl font-semibold text-white">
-                Growth curve
-              </h2>
-            </div>
-            <Badge tone="success">{formatPercent(pnlPct)}</Badge>
-          </div>
-          <div className="mt-5 h-[260px]">
+          <SectionHeader
+            eyebrow="Equity curve"
+            title="Trend"
+            subtitle="Weekly mark-to-market movement."
+          />
+          <div className="mt-4 h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={areaData}>
                 <defs>
                   <linearGradient id="portfolioFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#29b6f6" stopOpacity={0.42} />
+                    <stop offset="0%" stopColor="#29b6f6" stopOpacity={0.32} />
                     <stop offset="100%" stopColor="#29b6f6" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
@@ -205,187 +196,131 @@ export default function Dashboard() {
                   type="monotone"
                   dataKey="value"
                   stroke="#29b6f6"
-                  strokeWidth={2.5}
+                  strokeWidth={2.2}
                   fill="url(#portfolioFill)"
                 />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </GlassPanel>
-      </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {loading
-          ? Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="h-[166px] animate-pulse rounded-3xl border border-white/[0.08] bg-white/[0.04]" />
-            ))
-          : metrics.map((metric) => <MetricCard key={metric.label} {...metric} />)}
-      </section>
-
-      <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <GlassPanel>
           <SectionHeader
-            eyebrow="Watchlist pulse"
-            title="What's moving right now"
-            subtitle="A concise view of the instruments you're likely to care about first."
-            action={
-              <Button variant="secondary">
-                Open full watchlist
-                <Radar className="h-4 w-4" />
-              </Button>
-            }
+            eyebrow="Watchlist"
+            title="Active names"
+            subtitle="Compact live cards with quick readouts."
+            action={<Badge tone="accent">{topWatchlist.length} tracked</Badge>}
           />
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            {watchlist.slice(0, 6).map((stock, index) => {
-              const series = Array.from({ length: 8 }).map((_, i) => ({
+          <div className="mt-4 space-y-3">
+            {topWatchlist.map((stock, index) => {
+              const isUp = !stock.isDown;
+              const series = Array.from({ length: 7 }).map((_, i) => ({
                 value:
                   stock.price *
-                  (1 + (Math.sin(i + index) * 0.015 + (i % 2 === 0 ? 0.008 : -0.004))),
+                  (1 + (Math.sin(i + index) * 0.01 + (i % 2 === 0 ? 0.006 : -0.003))),
               }));
-              const isPositive = !stock.isDown;
               return (
                 <motion.button
                   key={stock.name}
-                  whileHover={{ y: -2 }}
-                  className="group rounded-3xl border border-white/[0.08] bg-white/[0.03] p-4 text-left transition hover:bg-white/[0.06]"
+                  whileHover={{ y: -1 }}
+                  className="flex w-full items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3 text-left transition hover:bg-white/[0.05]"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-display text-lg font-semibold text-white">{stock.name}</p>
-                      <p className={`mt-1 text-sm ${isPositive ? "text-emerald-300" : "text-rose-300"}`}>
-                        {stock.percent}
-                      </p>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-semibold text-white">{stock.name}</p>
+                      <Badge tone={isUp ? "success" : "danger"}>{stock.percent}</Badge>
                     </div>
-                    <Badge tone={isPositive ? "success" : "danger"}>
+                    <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">
                       {formatINR(stock.price, 2)}
-                    </Badge>
+                    </p>
                   </div>
-                  <div className="mt-4 h-16">
-                    <Sparkline
-                      data={series}
-                      stroke={isPositive ? "#22c55e" : "#ef4444"}
-                    />
+                  <div className="h-10 w-24 shrink-0">
+                    <Sparkline data={series} stroke={isUp ? "#22c55e" : "#ef4444"} />
                   </div>
                 </motion.button>
               );
             })}
           </div>
         </GlassPanel>
-
-        <div className="space-y-6">
-          <GlassPanel>
-            <SectionHeader
-              eyebrow="AI desk"
-              title="Smart recommendations"
-              subtitle="Short, high-signal guidance meant to support decision making."
-            />
-            <div className="mt-5 space-y-3">
-              {insights.map((insight) => (
-                <div
-                  key={insight.title}
-                  className="rounded-3xl border border-white/[0.08] bg-white/[0.03] p-4"
-                >
-                  <div className="flex items-center gap-2">
-                    <Brain className="h-4 w-4 text-accent-400" />
-                    <h3 className="font-semibold text-white">{insight.title}</h3>
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-slate-400">{insight.body}</p>
-                </div>
-              ))}
-            </div>
-          </GlassPanel>
-
-          <GlassPanel>
-            <SectionHeader
-              eyebrow="Sector spread"
-              title="Portfolio distribution"
-              subtitle="An elegant summary of exposure across the current mix."
-            />
-            <div className="mt-5 space-y-3">
-              {sectorCards.map((sector) => (
-                <div key={sector.label} className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-white">{sector.label}</p>
-                    <p className="text-sm text-slate-400">{sector.pct}%</p>
-                  </div>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/[0.08]">
-                    <div
-                      className={`h-full rounded-full ${
-                        sector.tone === "accent"
-                          ? "bg-accent-400"
-                          : sector.tone === "success"
-                          ? "bg-emerald-400"
-                          : sector.tone === "warning"
-                          ? "bg-amber-400"
-                          : sector.tone === "danger"
-                          ? "bg-rose-400"
-                          : "bg-slate-400"
-                      }`}
-                      style={{ width: `${sector.pct}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </GlassPanel>
-        </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+      <section className="grid gap-5 xl:grid-cols-[1.15fr_0.9fr_0.75fr]">
         <GlassPanel>
           <SectionHeader
-            eyebrow="Recent activity"
-            title="Activity timeline"
-            subtitle="Your latest executed or queued actions, rendered as a calm timeline."
+            eyebrow="AI desk"
+            title="Signals"
+            subtitle="Short context, not marketing copy."
           />
-          <div className="mt-5 space-y-4">
+          <div className="mt-4 space-y-3">
+            {[
+              "Momentum is strongest in financials and selective tech names.",
+              "Trim weak names before adding to higher relative-strength stocks.",
+              "Use limit orders near earnings to avoid avoidable slippage.",
+            ].map((text) => (
+              <div key={text} className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3">
+                <div className="flex items-center gap-2">
+                  <Brain className="h-4 w-4 text-accent-400" />
+                  <p className="text-sm leading-6 text-slate-300">{text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </GlassPanel>
+
+        <GlassPanel>
+          <SectionHeader
+            eyebrow="Recent"
+            title="Activity"
+            subtitle="Latest executions."
+          />
+          <div className="mt-4 space-y-3">
             {activity.length ? (
               activity.map((order) => (
                 <div
                   key={`${order.name}-${order.time}`}
-                  className="flex items-start gap-4 rounded-3xl border border-white/[0.08] bg-white/[0.03] p-4"
+                  className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3"
                 >
-                  <div className={`mt-1 h-3 w-3 rounded-full ${order.type === "BUY" ? "bg-emerald-400" : "bg-rose-400"}`} />
-                  <div className="flex-1">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="font-semibold text-white">{order.name}</p>
-                      <Badge tone={order.type === "BUY" ? "success" : "danger"}>{order.type}</Badge>
-                    </div>
-                    <p className="mt-2 text-sm text-slate-400">
-                      {order.qty} shares at {formatINR(order.price, 2)}
-                    </p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-medium text-white">{order.name}</p>
+                    <Badge tone={order.type === "BUY" ? "success" : "danger"}>{order.type}</Badge>
                   </div>
+                  <p className="mt-2 text-xs uppercase tracking-[0.18em] text-slate-500">
+                    {order.qty} @ {formatINR(order.price, 2)}
+                  </p>
                 </div>
               ))
             ) : (
-              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-10 text-center">
-                <ShieldAlert className="mx-auto h-8 w-8 text-slate-500" />
-                <p className="mt-4 font-semibold text-white">No recent activity</p>
-                <p className="mt-2 text-sm text-slate-400">
-                  Once orders start flowing, they will appear here with timestamps and status tags.
-                </p>
+              <div className="rounded-2xl border border-dashed border-white/[0.10] bg-white/[0.03] p-4 text-sm text-slate-400">
+                No recent activity.
               </div>
             )}
           </div>
         </GlassPanel>
 
         <GlassPanel>
-          <SectionHeader
-            eyebrow="Signal board"
-            title="Risk and opportunity"
-            subtitle="A few concise indicators for the next decision."
-          />
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-            {[
-              { label: "Momentum", value: "Strong", tone: "success" },
-              { label: "Volatility", value: "Controlled", tone: "accent" },
-              { label: "News flow", value: "Neutral", tone: "neutral" },
-              { label: "Liquidity", value: "Healthy", tone: "success" },
-            ].map((item) => (
-              <div key={item.label} className="rounded-3xl border border-white/[0.08] bg-white/[0.03] p-4">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-sm text-slate-400">{item.label}</p>
-                  <Badge tone={item.tone}>{item.value}</Badge>
+          <SectionHeader eyebrow="Allocation" title="Mix" subtitle="Value split." />
+          <div className="mt-4 space-y-3">
+            {allocation.map((item) => (
+              <div key={item.label}>
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <p className="text-sm font-medium text-white">{item.label}</p>
+                  <p className="text-sm text-slate-400">{item.pct}%</p>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-white/[0.08]">
+                  <div
+                    className={`h-full rounded-full ${
+                      item.tone === "accent"
+                        ? "bg-accent-400"
+                        : item.tone === "success"
+                        ? "bg-emerald-400"
+                        : item.tone === "warning"
+                        ? "bg-amber-400"
+                        : item.tone === "danger"
+                        ? "bg-rose-400"
+                        : "bg-slate-400"
+                    }`}
+                    style={{ width: `${item.pct}%` }}
+                  />
                 </div>
               </div>
             ))}
@@ -395,6 +330,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
-
-

@@ -33,8 +33,8 @@ module.exports = {
         warning: "#f59e0b",
       },
       boxShadow: {
-        glow: "0 0 0 1px rgba(41, 182, 246, 0.15), 0 24px 80px rgba(0, 0, 0, 0.45)",
-        panel: "0 18px 60px rgba(0, 0, 0, 0.35)",
+        glow: "0 0 0 1px rgba(41, 182, 246, 0.12), 0 18px 48px rgba(0, 0, 0, 0.32)",
+        panel: "0 12px 32px rgba(0, 0, 0, 0.24)",
       },
       backgroundImage: {
         "ink-grid":
@@ -47,9 +47,9 @@ module.exports = {
         sans: ["Plus Jakarta Sans", "Space Grotesk", "sans-serif"],
       },
       borderRadius: {
-        xl: "1rem",
-        "2xl": "1.35rem",
-        "3xl": "1.75rem",
+        xl: "0.75rem",
+        "2xl": "1rem",
+        "3xl": "1.25rem",
       },
       keyframes: {
         floaty: {

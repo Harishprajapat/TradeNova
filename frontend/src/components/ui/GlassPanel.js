@@ -8,7 +8,7 @@ export default function GlassPanel({
   return (
     <div
       className={[
-        "rounded-3xl border border-border-soft bg-surface-900 backdrop-blur-xl shadow-panel",
+        "rounded-2xl border border-white/[0.06] bg-slate-900/95 shadow-[0_16px_40px_rgba(0,0,0,0.24)]",
         padded ? "p-4 sm:p-5 lg:p-6" : "",
         className,
       ].join(" ")}
