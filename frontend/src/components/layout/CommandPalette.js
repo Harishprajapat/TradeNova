@@ -32,13 +32,13 @@ export default function CommandPalette({ open, onClose }) {
   return (
     <AnimatePresence>
       {open ? (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/[0.70] px-4 pt-24 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/[0.72] px-4 pt-24 backdrop-blur-sm">
           <motion.div
             initial={{ opacity: 0, y: 16, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.98 }}
             transition={{ duration: 0.18 }}
-            className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-border-soft bg-slate-950 shadow-panel"
+            className="w-full max-w-2xl overflow-hidden rounded-2xl border border-white/[0.08] bg-slate-950 shadow-[0_18px_48px_rgba(0,0,0,0.32)]"
           >
             <div className="flex items-center gap-3 border-b border-white/[0.08] px-4 py-4">
               <Search className="h-4 w-4 text-slate-400" />

@@ -10,7 +10,7 @@ export function SkeletonLine({ className = "" }) {
 
 export function SkeletonCard() {
   return (
-    <div className="rounded-3xl border border-border-soft bg-white/[0.04] p-5">
+    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-5">
       <SkeletonLine className="h-3 w-24" />
       <SkeletonLine className="mt-4 h-8 w-40" />
       <SkeletonLine className="mt-6 h-32 w-full rounded-2xl" />

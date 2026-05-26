@@ -12,7 +12,7 @@ export default function SectionHeader({
     <div className={`flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between ${className}`}>
       <div>
         {eyebrow ? <Badge tone="accent">{eyebrow}</Badge> : null}
-        <h2 className="mt-3 font-display text-xl font-semibold text-white sm:text-2xl">
+        <h2 className="mt-3 font-display text-lg font-semibold text-white sm:text-xl">
           {title}
         </h2>
         {subtitle ? (
