@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Eye, EyeOff, Github, Mail, Chrome, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Mail, ArrowRight } from "lucide-react";
 import AuthShell from "./AuthShell";
 import Button from "../ui/Button";
 import { API_BASE_URL } from "../../config/appConfig";
@@ -48,8 +48,8 @@ export default function Login() {
     navigate("/dashboard");
   };
 
-  const socialButton =
-    "inline-flex w-full items-center justify-center gap-3 rounded-2xl border border-border-soft bg-white/[0.04] px-4 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/[0.07]";
+  // const socialButton =
+  //   "inline-flex w-full items-center justify-center gap-3 rounded-2xl border border-border-soft bg-white/[0.04] px-4 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/[0.07]";
 
   return (
     <AuthShell
@@ -119,16 +119,7 @@ export default function Login() {
           <ArrowRight className="h-4 w-4" />
         </Button>
 
-        <div className="grid grid-cols-2 gap-3">
-          <button type="button" className={socialButton}>
-            <Github className="h-4 w-4" />
-            GitHub
-          </button>
-          <button type="button" className={socialButton}>
-            <Chrome className="h-4 w-4" />
-            Google
-          </button>
-        </div>
+        
 
         <Button variant="secondary" type="button" className="w-full py-3.5" onClick={loginAsDemo}>
           Use demo account
